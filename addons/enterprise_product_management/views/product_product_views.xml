@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- 繼承產品變體表單視圖 -->
+    <record id="view_product_product_form_inherit" model="ir.ui.view">
+        <field name="name">product.product.form.inherit</field>
+        <field name="model">product.product</field>
+        <field name="inherit_id" ref="product.product_normal_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='barcode']" position="after">
+                <field name="x_material_category_ids" widget="many2many_tags"/>
+                <field name="x_stock_quantity"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- 繼承產品變體列表視圖 -->
+    <record id="view_product_product_tree_inherit" model="ir.ui.view">
+        <field name="name">product.product.tree.inherit</field>
+        <field name="model">product.product</field>
+        <field name="inherit_id" ref="product.product_product_tree_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='qty_available']" position="before">
+                <field name="x_material_category_ids" widget="many2many_tags" optional="show"/>
+                <field name="x_stock_quantity" optional="hide"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- 繼承產品變體搜尋視圖 -->
+    <record id="view_product_product_search_inherit" model="ir.ui.view">
+        <field name="name">product.product.search.inherit</field>
+        <field name="model">product.product</field>
+        <field name="inherit_id" ref="product.product_search_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='name']" position="after">
+                <field name="x_material_category_ids" string="物料種類"/>
+            </xpath>
+            <xpath expr="//group" position="inside">
+                <filter string="物料種類" name="group_by_material_category" 
+                        domain="[]" context="{'group_by': 'x_material_category_ids'}"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

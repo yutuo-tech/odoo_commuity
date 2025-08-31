@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_epm_material_category_user,epm.material.category.user,model_epm_material_category,base.group_user,1,0,0,0
+access_epm_material_category_manager,epm.material.category.manager,model_epm_material_category,base.group_system,1,1,1,1
+access_epm_material_repair_user,epm.material.repair.user,model_epm_material_repair,base.group_user,1,0,0,0
+access_epm_material_repair_manager,epm.material.repair.manager,model_epm_material_repair,base.group_system,1,1,1,1

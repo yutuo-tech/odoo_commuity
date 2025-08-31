@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- 維修問題庫表單視圖 -->
+    <record id="view_material_repair_form" model="ir.ui.view">
+        <field name="name">epm.material.repair.form</field>
+        <field name="model">epm.material.repair</field>
+        <field name="arch" type="xml">
+            <form string="維修問題庫">
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name" string="問題名稱"/>
+                        <h1>
+                            <field name="name" placeholder="例如：馬達異音、軸承磨損..."/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group string="基本資訊">
+                            <field name="material_id" required="1" 
+                                   context="{'default_detailed_type': 'product'}"
+                                   help="選擇物料，物料透過 BOM 與產品關聯"/>
+                            <field name="product_tmpl_id" readonly="1" 
+                                   string="產品範本"/>
+                            <field name="repair_type"/>
+                        </group>
+                        <group string="費用資訊">
+                            <field name="price"/>
+                            <field name="currency"/>
+                            <field name="is_public"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="問題描述">
+                            <field name="description" nolabel="1" 
+                                   placeholder="詳細描述維修問題、症狀、可能原因和解決方案..."/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- 維修問題庫列表視圖 -->
+    <record id="view_material_repair_tree" model="ir.ui.view">
+        <field name="name">epm.material.repair.tree</field>
+        <field name="model">epm.material.repair</field>
+        <field name="arch" type="xml">
+            <list string="維修問題庫">
+                <field name="material_id" string="物料"/>
+                <field name="product_tmpl_id" string="產品範本" optional="show"/>
+                <field name="name" string="問題名稱" decoration-bf="1"/>
+                <field name="repair_type" string="維修類型" optional="show"/>
+                <field name="price" string="費用"/>
+                <field name="currency" string="幣別"/>
+                <field name="is_public" string="外部顯示" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- 維修問題庫搜尋視圖 -->
+    <record id="view_material_repair_search" model="ir.ui.view">
+        <field name="name">epm.material.repair.search</field>
+        <field name="model">epm.material.repair</field>
+        <field name="arch" type="xml">
+            <search string="搜尋維修問題">
+                <field name="name" string="問題名稱" 
+                       filter_domain="[('name', 'ilike', self)]"/>
+                <field name="material_id" string="物料" 
+                       filter_domain="[('material_id', 'ilike', self)]"/>
+                <field name="product_tmpl_id" string="產品範本"/>
+                <field name="repair_type" string="維修類型"/>
+                <separator/>
+                <filter string="顯示給外部工單" name="public_only" 
+                        domain="[('is_public', '=', True)]"/>
+                <filter string="隱藏外部工單" name="internal_only" 
+                        domain="[('is_public', '=', False)]"/>
+                <separator/>
+                <group expand="0" string="分組依據">
+                    <filter string="物料" name="group_by_material" 
+                            domain="[]" context="{'group_by': 'material_id'}"/>
+                    <filter string="產品範本" name="group_by_product_template" 
+                            domain="[]" context="{'group_by': 'product_tmpl_id'}"/>
+                    <filter string="維修類型" name="group_by_repair_type" 
+                            domain="[]" context="{'group_by': 'repair_type'}"/>
+                    <filter string="幣別" name="group_by_currency" 
+                            domain="[]" context="{'group_by': 'currency'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- 維修問題庫動作 -->
+    <record id="action_material_repair" model="ir.actions.act_window">
+        <field name="name">維修問題庫</field>
+        <field name="res_model">epm.material.repair</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                建立維修問題項目
+            </p>
+        </field>
+    </record>
+</odoo>
