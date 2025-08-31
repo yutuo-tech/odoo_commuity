@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- 物料種類表單視圖 -->
+    <record id="view_material_category_form" model="ir.ui.view">
+        <field name="name">epm.material.category.form</field>
+        <field name="model">epm.material.category</field>
+        <field name="arch" type="xml">
+            <form string="物料種類">
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button type="object" name="action_view_products" 
+                                class="oe_stat_button" icon="fa-cubes">
+                            <field name="product_count" widget="statinfo" 
+                                   string="物料"/>
+                        </button>
+                        <button type="object" name="action_view_repair_problems" 
+                                class="oe_stat_button" icon="fa-wrench"
+                                invisible="repair_problem_count == 0">
+                            <field name="repair_problem_count" widget="statinfo" 
+                                   string="維修問題"/>
+                        </button>
+                    </div>
+                    
+                    <widget name="web_ribbon" title="已停用" 
+                            bg_color="text-bg-danger" invisible="active"/>
+                            
+                    <div class="oe_title">
+                        <label for="name" string="種類名稱"/>
+                        <h1>
+                            <field name="name" placeholder="例如：電子零件、機械零件..."/>
+                        </h1>
+                    </div>
+                    
+                    <group>
+                        <group string="基本資訊">
+                            <field name="code"/>
+                            <field name="sequence"/>
+                            <field name="active"/>
+                            <field name="color" widget="color"/>
+                        </group>
+                    </group>
+                    
+                    <notebook>
+                        <page string="說明">
+                            <field name="description" nolabel="1" 
+                                   placeholder="請輸入該物料種類的詳細說明..."/>
+                        </page>
+                        <page string="物料清單" name="products">
+                            <field name="product_ids" nolabel="1" widget="many2many_tags"
+                                   options="{'no_create': True, 'no_create_edit': True}"
+                                   placeholder="選擇現有產品..."/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- 物料種類列表視圖 -->
+    <record id="view_material_category_tree" model="ir.ui.view">
+        <field name="name">epm.material.category.tree</field>
+        <field name="model">epm.material.category</field>
+        <field name="arch" type="xml">
+            <list string="物料種類">
+                <field name="sequence" widget="handle"/>
+                <field name="name" decoration-bf="1"/>
+                <field name="code" optional="show"/>
+                <field name="product_count" string="物料數量"/>
+                <field name="repair_problem_count" string="維修問題" optional="hide"/>
+                <field name="active" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- 物料種類看板視圖 -->
+    <record id="view_material_category_kanban" model="ir.ui.view">
+        <field name="name">epm.material.category.kanban</field>
+        <field name="model">epm.material.category</field>
+        <field name="arch" type="xml">
+            <kanban class="o_kanban_mobile">
+                <field name="name"/>
+                <field name="code"/>
+                <field name="product_count"/>
+                <field name="repair_problem_count"/>
+                <field name="color"/>
+                <templates>
+                    <t t-name="card">
+                        <div t-attf-class="oe_kanban_color_#{kanban_getcolor(record.color.raw_value)} oe_kanban_card oe_kanban_global_click">
+                            <div class="o_kanban_card_header">
+                                <div class="o_kanban_card_header_title">
+                                    <div class="o_primary">
+                                        <strong>
+                                            <field name="name"/>
+                                        </strong>
+                                        <t t-if="record.code.value">
+                                            [<field name="code"/>]
+                                        </t>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="container o_kanban_card_content">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <button class="btn btn-primary" type="object" 
+                                                name="action_view_products">
+                                            <field name="product_count"/> 物料
+                                        </button>
+                                    </div>
+                                    <div class="col-6" t-if="record.repair_problem_count.raw_value">
+                                        <button class="btn btn-secondary" type="object" 
+                                                name="action_view_repair_problems">
+                                            <field name="repair_problem_count"/> 問題
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- 物料種類搜尋視圖 -->
+    <record id="view_material_category_search" model="ir.ui.view">
+        <field name="name">epm.material.category.search</field>
+        <field name="model">epm.material.category</field>
+        <field name="arch" type="xml">
+            <search string="搜尋物料種類">
+                <field name="name" string="種類名稱" 
+                       filter_domain="['|', ('name', 'ilike', self), ('code', 'ilike', self)]"/>
+                <field name="code" string="種類代碼"/>
+                <separator/>
+                <filter string="啟用" name="active" 
+                        domain="[('active', '=', True)]"/>
+                <filter string="停用" name="inactive" 
+                        domain="[('active', '=', False)]"/>
+                <separator/>
+                <filter string="有物料" name="has_products" 
+                        domain="[('product_count', '>', 0)]"/>
+                <filter string="無物料" name="no_products" 
+                        domain="[('product_count', '=', 0)]"/>
+                <separator/>
+                <filter string="有維修問題" name="has_problems" 
+                        domain="[('repair_problem_count', '>', 0)]"/>
+                <group expand="0" string="分組依據">
+                    <filter string="狀態" name="group_by_active" 
+                            domain="[]" context="{'group_by': 'active'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- 物料種類動作 -->
+    <record id="action_material_category" model="ir.actions.act_window">
+        <field name="name">物料種類</field>
+        <field name="res_model">epm.material.category</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="context">{'search_default_active': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                創建您的第一個物料種類
+            </p>
+            <p>
+                物料種類可以幫助您更好地組織和管理物料，
+                例如：電子零件、機械零件、消耗品等。
+            </p>
+        </field>
+    </record>
+</odoo>

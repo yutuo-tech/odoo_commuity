@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- 主選單 -->
+    <menuitem id="menu_epm_root" 
+              name="企業產品管理" 
+              sequence="10"/>
+
+    <!-- 產品管理子選單 -->
+    <menuitem id="menu_epm_products" 
+              name="產品管理" 
+              parent="menu_epm_root" 
+              sequence="10"/>
+
+    <menuitem id="menu_epm_product_templates" 
+              name="產品主檔" 
+              parent="menu_epm_products" 
+              action="product.product_template_action_all"
+              sequence="10"/>
+
+    <menuitem id="menu_epm_product_variants" 
+              name="產品變體" 
+              parent="menu_epm_products" 
+              action="product.product_normal_action_sell"
+              sequence="20"/>
+
+    <!-- BOM 管理 -->
+    <menuitem id="menu_epm_bom_management" 
+              name="物料清單(BOM)" 
+              parent="menu_epm_products" 
+              action="mrp.mrp_bom_form_action"
+              sequence="30"/>
+
+    <!-- 物料管理子選單 -->
+    <menuitem id="menu_epm_materials" 
+              name="物料管理" 
+              parent="menu_epm_root" 
+              sequence="20"/>
+
+    <menuitem id="menu_epm_material_categories" 
+              name="物料種類" 
+              parent="menu_epm_materials" 
+              action="action_material_category"
+              sequence="10"/>
+
+    <menuitem id="menu_epm_material_list" 
+              name="物料清單" 
+              parent="menu_epm_materials" 
+              action="product.product_normal_action"
+              sequence="20"/>
+
+    <!-- 維修問題管理 -->
+    <menuitem id="menu_epm_repair_management" 
+              name="維修問題管理" 
+              parent="menu_epm_root" 
+              sequence="30"/>
+
+    <menuitem id="menu_epm_repair_library" 
+              name="維修問題庫" 
+              parent="menu_epm_repair_management" 
+              action="action_material_repair"
+              sequence="10"/>
+</odoo>
