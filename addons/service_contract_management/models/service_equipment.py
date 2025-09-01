@@ -56,6 +56,11 @@ class ServiceEquipment(models.Model):
     )
     
     # 設備資訊
+    software_version = fields.Char(
+        '軟體版本', 
+        tracking=True,
+        help='設備的軟體版本號碼，例如：v1.2.3、2024.1、Build 20231215'
+    )
     production_date = fields.Date('生產日期')  # 更明確的命名
     purchase_date = fields.Date('採購日期', tracking=True)
     manufacture_date = fields.Date('製造日期')  # 保留原欄位相容性
@@ -247,6 +252,7 @@ class ServiceEquipment(models.Model):
                 'asset_number': equipment.asset_number,
                 'product': equipment.product_id.name,
                 'variant': equipment.variant_id.name if equipment.variant_id else None,
+                'software_version': equipment.software_version,
                 'customer': equipment.partner_id.name if equipment.partner_id else None,
                 'department': equipment.department_id.name if equipment.department_id else None,
                 'contact': equipment.contact_id.name if equipment.contact_id else None,

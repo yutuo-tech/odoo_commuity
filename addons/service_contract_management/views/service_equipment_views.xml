@@ -31,6 +31,7 @@
                         <group name="basic_info" string="基本資訊">
                             <field name="asset_number"/>
                             <field name="variant_id" domain="[('product_tmpl_id', '=', product_id)]"/>
+                            <field name="software_version" placeholder="例如：v1.2.3、2024.1"/>
                             <field name="status"/>
                             <field name="price"/>
                             <field name="currency_id"/>
@@ -108,6 +109,7 @@
                 <field name="name"/>
                 <field name="product_id"/>
                 <field name="variant_id"/>
+                <field name="software_version" optional="hide"/>
                 <field name="partner_id"/>
                 <field name="status" decoration-info="status in ('in_production','in_stock')" 
                        decoration-success="status in ('in_operation')" 
@@ -182,6 +184,7 @@
                 <field name="product_id" string="產品"/>
                 <field name="partner_id" string="客戶"/>
                 <field name="asset_number" string="資產編號"/>
+                <field name="software_version" string="軟體版本"/>
                 
                 <separator/>
                 <filter string="庫存中" name="in_stock" domain="[('status', '=', 'in_stock')]"/>

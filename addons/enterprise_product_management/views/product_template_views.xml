@@ -6,8 +6,25 @@
         <field name="model">product.template</field>
         <field name="inherit_id" ref="product.product_template_form_view"/>
         <field name="arch" type="xml">
+            <!-- 加入產品類型欄位 -->
             <xpath expr="//field[@name='type']" position="after">
                 <field name="x_product_type"/>
+            </xpath>
+            
+            <!-- 加入保養項目統計按鈕 -->
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_view_maintenance_items" type="object" 
+                        class="oe_stat_button" icon="fa-wrench">
+                    <field name="maintenance_item_count" widget="statinfo" 
+                           string="保養項目"/>
+                </button>
+            </xpath>
+            
+            <!-- 在 notebook 中加入保養項目頁籤 -->
+            <xpath expr="//notebook" position="inside">
+                <page string="保養項目" name="maintenance_items">
+                    <field name="maintenance_item_ids" context="{'default_product_tmpl_id': id}"/>
+                </page>
             </xpath>
         </field>
     </record>

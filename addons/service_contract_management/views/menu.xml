@@ -3,7 +3,7 @@
 
     <!-- 主選單 -->
     <menuitem id="menu_service_contract_management" 
-              name="服務合約管理"
+              name="客戶設備合約管理"
               sequence="50"
               web_icon="service_contract_management,static/description/icon.png"/>
 
