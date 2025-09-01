@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- 設備示範數據 -->
+    <record id="demo_equipment_01" model="service.equipment">
+        <field name="name">EQUIP-001</field>
+        <field name="asset_number">ASSET-2024-001</field>
+        <field name="product_id" ref="product.product_product_1"/>
+        <field name="partner_id" ref="base.res_partner_1"/>
+        <field name="status">in_operation</field>
+        <field name="price">50000.00</field>
+        <field name="currency_id" ref="base.TWD"/>
+        <field name="production_date">2024-01-15</field>
+        <field name="purchase_date">2024-02-01</field>
+        <field name="delivery_date">2024-02-15</field>
+        <field name="installation_date">2024-02-20</field>
+        <field name="warranty_start_date">2024-02-20</field>
+        <field name="warranty_end_date">2025-02-20</field>
+        <field name="installation_location">台北辦公室一樓</field>
+        <field name="maintenance_frequency">quarterly</field>
+        <field name="notes">主要生產設備，需定期維護保養</field>
+    </record>
+
+    <record id="demo_equipment_02" model="service.equipment">
+        <field name="name">EQUIP-002</field>
+        <field name="asset_number">ASSET-2024-002</field>
+        <field name="product_id" ref="product.product_product_2"/>
+        <field name="partner_id" ref="base.res_partner_2"/>
+        <field name="status">in_stock</field>
+        <field name="price">30000.00</field>
+        <field name="currency_id" ref="base.TWD"/>
+        <field name="production_date">2024-03-01</field>
+        <field name="purchase_date">2024-03-15</field>
+        <field name="warranty_start_date">2024-03-15</field>
+        <field name="warranty_end_date">2025-03-15</field>
+        <field name="installation_location">倉庫A區</field>
+        <field name="maintenance_frequency">monthly</field>
+        <field name="notes">備用設備，庫存中</field>
+    </record>
+
+    <record id="demo_equipment_03" model="service.equipment">
+        <field name="name">EQUIP-003</field>
+        <field name="asset_number">ASSET-2024-003</field>
+        <field name="product_id" ref="product.product_product_3"/>
+        <field name="partner_id" ref="base.res_partner_3"/>
+        <field name="status">shipped</field>
+        <field name="price">75000.00</field>
+        <field name="currency_id" ref="base.TWD"/>
+        <field name="production_date">2024-04-01</field>
+        <field name="purchase_date">2024-04-10</field>
+        <field name="delivery_date">2024-04-25</field>
+        <field name="warranty_start_date">2024-04-25</field>
+        <field name="warranty_end_date">2025-04-25</field>
+        <field name="installation_location">客戶現場</field>
+        <field name="maintenance_frequency">semi_annual</field>
+        <field name="notes">已出貨至客戶現場，等待安裝</field>
+    </record>
+
+    <record id="demo_equipment_04" model="service.equipment">
+        <field name="name">EQUIP-004</field>
+        <field name="asset_number">ASSET-2024-004</field>
+        <field name="product_id" ref="product.product_product_4"/>
+        <field name="partner_id" ref="base.res_partner_4"/>
+        <field name="status">maintenance</field>
+        <field name="price">45000.00</field>
+        <field name="currency_id" ref="base.TWD"/>
+        <field name="production_date">2023-12-01</field>
+        <field name="purchase_date">2023-12-15</field>
+        <field name="delivery_date">2024-01-05</field>
+        <field name="installation_date">2024-01-10</field>
+        <field name="warranty_start_date">2024-01-10</field>
+        <field name="warranty_end_date">2025-01-10</field>
+        <field name="installation_location">生產線B</field>
+        <field name="maintenance_frequency">monthly</field>
+        <field name="last_maintenance_date">2024-12-01</field>
+        <field name="next_maintenance_date">2025-01-01</field>
+        <field name="notes">定期保養中，預計一週內完成</field>
+    </record>
+
+    <record id="demo_equipment_05" model="service.equipment">
+        <field name="name">EQUIP-005</field>
+        <field name="asset_number">ASSET-2024-005</field>
+        <field name="product_id" ref="product.product_product_5"/>
+        <field name="partner_id" ref="base.res_partner_1"/>
+        <field name="status">in_production</field>
+        <field name="price">120000.00</field>
+        <field name="currency_id" ref="base.TWD"/>
+        <field name="production_date">2024-08-01</field>
+        <field name="manufacture_date">2024-07-15</field>
+        <field name="installation_location">製造部門</field>
+        <field name="maintenance_frequency">quarterly</field>
+        <field name="notes">客製化設備製作中，預計9月完成</field>
+    </record>
+
+</odoo>

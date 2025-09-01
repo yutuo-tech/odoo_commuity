@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- 設備序號序列 -->
+        <record id="seq_service_equipment" model="ir.sequence">
+            <field name="name">設備序號</field>
+            <field name="code">service.equipment</field>
+            <field name="prefix">EQ</field>
+            <field name="suffix"></field>
+            <field name="padding">6</field>
+            <field name="number_increment">1</field>
+            <field name="implementation">standard</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <!-- 服務合約編號序列 -->
+        <record id="seq_service_contract" model="ir.sequence">
+            <field name="name">服務合約編號</field>
+            <field name="code">service.contract</field>
+            <field name="prefix">SC</field>
+            <field name="suffix"></field>
+            <field name="padding">6</field>
+            <field name="number_increment">1</field>
+            <field name="implementation">standard</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <!-- 保養檢查項目代碼序列 -->
+        <record id="seq_maintenance_checklist" model="ir.sequence">
+            <field name="name">保養檢查項目代碼</field>
+            <field name="code">maintenance.checklist</field>
+            <field name="prefix">CHK</field>
+            <field name="suffix"></field>
+            <field name="padding">4</field>
+            <field name="number_increment">1</field>
+            <field name="implementation">standard</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+    </data>
+</odoo>

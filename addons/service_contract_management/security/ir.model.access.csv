@@ -1,0 +1,12 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_service_equipment_user,service.equipment.user,model_service_equipment,service_contract_management.group_service_user,1,0,0,0
+access_service_equipment_manager,service.equipment.manager,model_service_equipment,service_contract_management.group_service_equipment_manager,1,1,1,1
+access_service_equipment_admin,service.equipment.admin,model_service_equipment,service_contract_management.group_service_admin,1,1,1,1
+access_service_contract_user,service.contract.user,model_service_contract,service_contract_management.group_service_user,1,0,0,0
+access_service_contract_manager,service.contract.manager,model_service_contract,service_contract_management.group_service_contract_manager,1,1,1,1
+access_service_contract_admin,service.contract.admin,model_service_contract,service_contract_management.group_service_admin,1,1,1,1
+access_maintenance_checklist_user,maintenance.checklist.user,model_maintenance_checklist,service_contract_management.group_service_user,1,0,0,0
+access_maintenance_checklist_admin,maintenance.checklist.admin,model_maintenance_checklist,service_contract_management.group_service_admin,1,1,1,1
+access_service_equipment_base,service.equipment.base,model_service_equipment,base.group_user,1,1,1,0
+access_service_contract_base,service.contract.base,model_service_contract,base.group_user,1,1,1,0
+access_maintenance_checklist_base,maintenance.checklist.base,model_maintenance_checklist,base.group_user,1,1,1,0
