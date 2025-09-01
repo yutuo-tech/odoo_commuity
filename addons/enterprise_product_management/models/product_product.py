@@ -23,3 +23,24 @@ class ProductProduct(models.Model):
     )
     x_stock_quantity = fields.Integer('庫存數量', default=0,
                                       help='額外的庫存管理欄位')
+    
+    # 保養項目相關欄位（關聯到產品模板）
+    maintenance_item_count = fields.Integer(
+        '保養項目數量', 
+        related='product_tmpl_id.maintenance_item_count',
+        readonly=True,
+        help='此產品的保養項目總數（來自產品模板）'
+    )
+    
+    def action_view_maintenance_items(self):
+        """
+        開啟保養項目視圖
+        
+        此方法調用產品模板的保養項目管理功能，
+        因為保養項目定義在產品模板層級。
+        
+        Returns:
+            dict: 視窗動作設定
+        """
+        self.ensure_one()
+        return self.product_tmpl_id.action_view_maintenance_items()

@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- 設備管理表單視圖 -->
+    <record id="view_service_equipment_form" model="ir.ui.view">
+        <field name="name">service.equipment.form</field>
+        <field name="model">service.equipment</field>
+        <field name="arch" type="xml">
+            <form string="設備管理">
+                <header>
+                    <field name="status" widget="statusbar" statusbar_visible="in_production,in_stock,shipped,in_operation"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_contracts" type="object" class="oe_stat_button" icon="fa-file-contract-o">
+                            <field name="contract_count" widget="statbutton" string="合約"/>
+                        </button>
+                        <button name="action_create_contract" type="object" class="oe_stat_button" icon="fa-plus" string="建立合約"/>
+                    </div>
+                    
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="設備序號"/>
+                        </h1>
+                        <h2>
+                            <field name="product_id" placeholder="選擇產品"/>
+                        </h2>
+                    </div>
+                    
+                    <group>
+                        <group name="basic_info" string="基本資訊">
+                            <field name="asset_number"/>
+                            <field name="variant_id" domain="[('product_tmpl_id', '=', product_id)]"/>
+                            <field name="software_version" placeholder="例如：v1.2.3、2024.1"/>
+                            <field name="status"/>
+                            <field name="price"/>
+                            <field name="currency_id"/>
+                        </group>
+                        <group name="customer_info" string="客戶資訊">
+                            <field name="partner_id"/>
+                            <field name="partner_tax_id"/>
+                            <field name="department_id" domain="[('company_id', '=', partner_id)]"/>
+                            <field name="contact_id" domain="[('company_id', '=', partner_id)]"/>
+                            <field name="installation_location"/>
+                        </group>
+                    </group>
+                    
+                    <group>
+                        <group name="personnel_info" string="人員資訊">
+                            <field name="receiver_contact_id" domain="[('company_id', '=', partner_id)]"/>
+                            <field name="responsible_employee_id"/>
+                        </group>
+                        <group></group>
+                    </group>
+                    
+                    <group>
+                        <group name="dates" string="日期資訊">
+                            <field name="production_date"/>
+                            <field name="purchase_date"/>
+                            <field name="manufacture_date"/>
+                            <field name="delivery_date"/>
+                            <field name="installation_date"/>
+                            <field name="warranty_start_date"/>
+                            <field name="warranty_end_date"/>
+                        </group>
+                        <group name="maintenance_info" string="維護資訊">
+                            <field name="is_under_warranty" readonly="1"/>
+                            <field name="warranty_days_remaining" readonly="1"/>
+                            <field name="maintenance_frequency"/>
+                            <field name="last_maintenance_date"/>
+                            <field name="next_maintenance_date"/>
+                            <field name="maintenance_count" readonly="1"/>
+                            <field name="repair_count" readonly="1"/>
+                        </group>
+                    </group>
+                    
+                    <notebook>
+                        <page string="相關合約" name="contracts">
+                            <field name="contract_ids" readonly="1">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="contract_type"/>
+                                    <field name="state"/>
+                                    <field name="start_date"/>
+                                    <field name="end_date"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="備註" name="notes">
+                            <field name="notes"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- 設備管理列表視圖 -->
+    <record id="view_service_equipment_list" model="ir.ui.view">
+        <field name="name">service.equipment.list</field>
+        <field name="model">service.equipment</field>
+        <field name="arch" type="xml">
+            <list string="設備清單" default_order="name">
+                <field name="name"/>
+                <field name="product_id"/>
+                <field name="variant_id"/>
+                <field name="software_version" optional="hide"/>
+                <field name="partner_id"/>
+                <field name="status" decoration-info="status in ('in_production','in_stock')" 
+                       decoration-success="status in ('in_operation')" 
+                       decoration-warning="status in ('maintenance','repair')" 
+                       decoration-danger="status in ('scrapped')"/>
+                <field name="delivery_date"/>
+                <field name="warranty_end_date"/>
+                <field name="is_under_warranty"/>
+                <field name="contract_count"/>
+                <field name="price" sum="總價值"/>
+                <field name="currency_id" invisible="1"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- 設備管理看板視圖 -->
+    <record id="view_service_equipment_kanban" model="ir.ui.view">
+        <field name="name">service.equipment.kanban</field>
+        <field name="model">service.equipment</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="status">
+                <field name="name"/>
+                <field name="product_id"/>
+                <field name="partner_id"/>
+                <field name="status"/>
+                <field name="is_under_warranty"/>
+                <field name="contract_count"/>
+                <templates>
+                    <t t-name="card">
+                        <div class="oe_kanban_card oe_kanban_global_click">
+                            <div class="oe_kanban_content">
+                                <div class="o_kanban_record_top">
+                                    <div class="o_kanban_record_headings">
+                                        <strong class="o_kanban_record_title">
+                                            <field name="name"/>
+                                        </strong>
+                                    </div>
+                                    <div class="o_kanban_manage_button_section">
+                                        <a class="o_kanban_manage_toggle_button" href="#">
+                                            <i class="fa fa-ellipsis-v" role="img" aria-label="管理" title="管理"/>
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="o_kanban_record_body">
+                                    <div><field name="product_id"/></div>
+                                    <div t-if="record.partner_id.value">
+                                        客戶: <field name="partner_id"/>
+                                    </div>
+                                    <div t-if="record.contract_count.raw_value > 0">
+                                        <i class="fa fa-file-contract-o" title="合約"/> 
+                                        <field name="contract_count"/> 個合約
+                                    </div>
+                                    <div t-if="record.is_under_warranty.raw_value">
+                                        <span class="badge badge-success">保固期內</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- 設備管理搜尋視圖 -->
+    <record id="view_service_equipment_search" model="ir.ui.view">
+        <field name="name">service.equipment.search</field>
+        <field name="model">service.equipment</field>
+        <field name="arch" type="xml">
+            <search string="設備搜尋">
+                <field name="name" string="設備序號"/>
+                <field name="product_id" string="產品"/>
+                <field name="partner_id" string="客戶"/>
+                <field name="asset_number" string="資產編號"/>
+                <field name="software_version" string="軟體版本"/>
+                
+                <separator/>
+                <filter string="庫存中" name="in_stock" domain="[('status', '=', 'in_stock')]"/>
+                <filter string="已出貨" name="shipped" domain="[('status', '=', 'shipped')]"/>
+                <filter string="運行中" name="in_operation" domain="[('status', '=', 'in_operation')]"/>
+                <filter string="保固期內" name="under_warranty" domain="[('warranty_end_date', '&gt;=', context_today())]"/>
+                <filter string="即將到期" name="expiring_soon" 
+                        domain="[('warranty_end_date', '!=', False), ('warranty_end_date', '&gt;=', context_today())]"/>
+                
+                <separator/>
+                <filter string="有合約" name="has_contract" domain="[('contract_ids', '!=', False)]"/>
+                <filter string="無合約" name="no_contract" domain="[('contract_ids', '=', False)]"/>
+                
+                <group expand="0" string="分組">
+                    <filter string="狀態" name="group_status" domain="[]" context="{'group_by': 'status'}"/>
+                    <filter string="產品" name="group_product" domain="[]" context="{'group_by': 'product_id'}"/>
+                    <filter string="客戶" name="group_customer" domain="[]" context="{'group_by': 'partner_id'}"/>
+                    <filter string="保固狀態" name="group_warranty" domain="[]" context="{'group_by': 'is_under_warranty'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- 動作定義 -->
+    <record id="action_service_equipment" model="ir.actions.act_window">
+        <field name="name">設備管理</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">service.equipment</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="search_view_id" ref="view_service_equipment_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                建立第一個設備記錄
+            </p>
+            <p>
+                在這裡管理所有設備的生命週期，從生產到報廢的完整追蹤。
+            </p>
+        </field>
+    </record>
+
+    <!-- 庫存設備動作 -->
+    <record id="action_service_equipment_stock" model="ir.actions.act_window">
+        <field name="name">庫存設備</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">service.equipment</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('status', 'in', ['in_production', 'in_stock', 'reserved'])]</field>
+        <field name="context">{'search_default_in_stock': 1}</field>
+        <field name="search_view_id" ref="view_service_equipment_search"/>
+    </record>
+
+    <!-- 客戶設備動作 -->
+    <record id="action_service_equipment_customer" model="ir.actions.act_window">
+        <field name="name">客戶設備</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">service.equipment</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('status', 'in', ['shipped', 'installed', 'in_operation', 'maintenance', 'repair'])]</field>
+        <field name="context">{'search_default_in_operation': 1}</field>
+        <field name="search_view_id" ref="view_service_equipment_search"/>
+    </record>
+
+    <!-- 保固即將到期動作 -->
+    <record id="action_service_equipment_warranty_expiring" model="ir.actions.act_window">
+        <field name="name">保固即將到期</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">service.equipment</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('warranty_end_date', '!=', False), ('warranty_end_date', '&gt;=', context_today())]</field>
+        <field name="context">{'search_default_expiring_soon': 1}</field>
+        <field name="search_view_id" ref="view_service_equipment_search"/>
+    </record>
+
+</odoo>

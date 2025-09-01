@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- 服務合約表單視圖 -->
+    <record id="view_service_contract_form" model="ir.ui.view">
+        <field name="name">service.contract.form</field>
+        <field name="model">service.contract</field>
+        <field name="arch" type="xml">
+            <form string="服務合約">
+                <header>
+                    <button name="action_confirm" string="確認" type="object" class="oe_highlight" invisible="state != 'draft'"/>
+                    <button name="action_activate" string="啟動" type="object" class="oe_highlight" invisible="state != 'confirmed'"/>
+                    <button name="action_renew" string="續約" type="object" invisible="state not in ('active', 'expired')"/>
+                    <button name="action_expire" string="到期" type="object" invisible="state != 'active'"/>
+                    <button name="action_cancel" string="取消" type="object" invisible="state not in ('draft', 'confirmed', 'active')"/>
+                    <button name="action_close" string="結案" type="object" invisible="state not in ('expired', 'cancelled')"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,confirmed,active,expired"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_equipment" type="object" class="oe_stat_button" icon="fa-cog">
+                            <field name="equipment_count" widget="statbutton" string="設備"/>
+                        </button>
+                        <button name="action_add_equipment" type="object" class="oe_stat_button" icon="fa-plus" string="添加設備"/>
+                    </div>
+                    
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="合約編號"/>
+                        </h1>
+                        <h2>
+                            <field name="contract_name" placeholder="合約名稱"/>
+                        </h2>
+                    </div>
+                    
+                    <group>
+                        <group name="basic_info" string="基本資訊">
+                            <field name="contract_type"/>
+                            <field name="partner_id"/>
+                            <field name="department_id" domain="[('company_id', '=', partner_id)]"/>
+                            <field name="contact_id" domain="[('company_id', '=', partner_id)]"/>
+                            <field name="responsible_employee_id"/>
+                        </group>
+                        <group name="dates" string="合約期限">
+                            <field name="sign_date"/>
+                            <field name="start_date"/>
+                            <field name="end_date"/>
+                            <field name="duration_months" readonly="1"/>
+                            <field name="days_to_expiry" readonly="1"/>
+                            <field name="is_expiring_soon" readonly="1"/>
+                        </group>
+                    </group>
+                    
+                    <group>
+                        <group name="financial" string="財務資訊">
+                            <field name="total_amount"/>
+                            <field name="currency_id"/>
+                            <field name="payment_term"/>
+                        </group>
+                        <group name="acceptance" string="驗收資訊">
+                            <field name="acceptance_date"/>
+                        </group>
+                        <group name="status" string="狀態資訊">
+                            <field name="state"/>
+                        </group>
+                    </group>
+                    
+                    <notebook>
+                        <page string="涵蓋設備" name="equipment">
+                            <field name="equipment_ids">
+                                <list editable="bottom">
+                                    <field name="name"/>
+                                    <field name="product_id"/>
+                                    <field name="variant_id"/>
+                                    <field name="partner_id"/>
+                                    <field name="status"/>
+                                    <field name="warranty_end_date"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="財務管理" name="finance">
+                            <group>
+                                <group name="billing_info" string="請款資訊">
+                                    <field name="billing_date"/>
+                                    <field name="billed_amount"/>
+                                </group>
+                                <group name="payment_info" string="收款資訊">
+                                    <field name="payment_received_date"/>
+                                    <field name="received_amount"/>
+                                    <field name="balance_amount" readonly="1"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="備註" name="notes">
+                            <field name="remarks"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- 服務合約列表視圖 -->
+    <record id="view_service_contract_list" model="ir.ui.view">
+        <field name="name">service.contract.list</field>
+        <field name="model">service.contract</field>
+        <field name="arch" type="xml">
+            <list string="服務合約" default_order="name desc">
+                <field name="name"/>
+                <field name="contract_name"/>
+                <field name="contract_type"/>
+                <field name="partner_id"/>
+                <field name="start_date"/>
+                <field name="end_date"/>
+                <field name="days_to_expiry"/>
+                <field name="equipment_count"/>
+                <field name="total_amount" sum="總金額"/>
+                <field name="currency_id" invisible="1"/>
+                <field name="state" decoration-info="state == 'draft'" 
+                       decoration-warning="state == 'confirmed'" 
+                       decoration-success="state == 'active'" 
+                       decoration-danger="state in ('expired','cancelled')" 
+                       decoration-muted="state == 'closed'"/>
+                <field name="is_expiring_soon" invisible="1"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- 服務合約看板視圖 -->
+    <record id="view_service_contract_kanban" model="ir.ui.view">
+        <field name="name">service.contract.kanban</field>
+        <field name="model">service.contract</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="state">
+                <field name="name"/>
+                <field name="contract_name"/>
+                <field name="partner_id"/>
+                <field name="contract_type"/>
+                <field name="start_date"/>
+                <field name="end_date"/>
+                <field name="days_to_expiry"/>
+                <field name="equipment_count"/>
+                <field name="total_amount"/>
+                <field name="state"/>
+                <field name="is_expiring_soon"/>
+                <templates>
+                    <t t-name="card">
+                        <div class="oe_kanban_card oe_kanban_global_click">
+                            <div class="oe_kanban_content">
+                                <div class="o_kanban_record_top">
+                                    <div class="o_kanban_record_headings">
+                                        <strong class="o_kanban_record_title">
+                                            <field name="name"/>
+                                        </strong>
+                                        <br/>
+                                        <field name="contract_name"/>
+                                    </div>
+                                    <div class="o_kanban_manage_button_section">
+                                        <a class="o_kanban_manage_toggle_button" href="#">
+                                            <i class="fa fa-ellipsis-v" role="img" aria-label="Manage" title="Manage"/>
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="o_kanban_record_body">
+                                    <div>客戶: <field name="partner_id"/></div>
+                                    <div>類型: <field name="contract_type"/></div>
+                                    <div>期限: <field name="start_date"/> ~ <field name="end_date"/></div>
+                                    <div t-if="record.equipment_count.raw_value > 0">
+                                        <i class="fa fa-cog" title="設備"/> 
+                                        <field name="equipment_count"/> 台設備
+                                    </div>
+                                    <div t-if="record.total_amount.raw_value">
+                                        金額: <field name="total_amount"/>
+                                    </div>
+                                    <div t-if="record.is_expiring_soon.raw_value" class="text-danger">
+                                        <i class="fa fa-warning" title="警告"/> 即將到期 (<field name="days_to_expiry"/>天)
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- 服務合約搜尋視圖 -->
+    <record id="view_service_contract_search" model="ir.ui.view">
+        <field name="name">service.contract.search</field>
+        <field name="model">service.contract</field>
+        <field name="arch" type="xml">
+            <search string="合約搜尋">
+                <field name="name" string="合約編號"/>
+                <field name="contract_name" string="合約名稱"/>
+                <field name="partner_id" string="客戶"/>
+                
+                <separator/>
+                <filter string="草稿" name="draft" domain="[('state', '=', 'draft')]"/>
+                <filter string="已確認" name="confirmed" domain="[('state', '=', 'confirmed')]"/>
+                <filter string="執行中" name="active" domain="[('state', '=', 'active')]"/>
+                <filter string="已到期" name="expired" domain="[('state', '=', 'expired')]"/>
+                <filter string="即將到期" name="expiring_soon" domain="[('is_expiring_soon', '=', True)]"/>
+                
+                <separator/>
+                <filter string="保固合約" name="warranty" domain="[('contract_type', '=', 'warranty')]"/>
+                <filter string="維護合約" name="maintenance" domain="[('contract_type', '=', 'maintenance')]"/>
+                <filter string="全責保固" name="full_service" domain="[('contract_type', '=', 'full_service')]"/>
+                
+                <group expand="0" string="分組">
+                    <filter string="狀態" name="group_state" domain="[]" context="{'group_by': 'state'}"/>
+                    <filter string="合約類型" name="group_type" domain="[]" context="{'group_by': 'contract_type'}"/>
+                    <filter string="客戶" name="group_customer" domain="[]" context="{'group_by': 'partner_id'}"/>
+                    <filter string="簽約月份" name="group_month" domain="[]" context="{'group_by': 'start_date:month'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- 動作定義 -->
+    <record id="action_service_contract" model="ir.actions.act_window">
+        <field name="name">服務合約</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">service.contract</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="search_view_id" ref="view_service_contract_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                建立第一個服務合約
+            </p>
+            <p>
+                管理所有服務合約，包括保固、維護、租賃等各種類型的合約。
+            </p>
+        </field>
+    </record>
+
+    <!-- 有效合約動作 -->
+    <record id="action_service_contract_active" model="ir.actions.act_window">
+        <field name="name">有效合約</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">service.contract</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('state', 'in', ['confirmed', 'active'])]</field>
+        <field name="context">{'search_default_active': 1}</field>
+        <field name="search_view_id" ref="view_service_contract_search"/>
+    </record>
+
+    <!-- 即將到期合約動作 -->
+    <record id="action_service_contract_expiring" model="ir.actions.act_window">
+        <field name="name">即將到期合約</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">service.contract</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('is_expiring_soon', '=', True)]</field>
+        <field name="context">{'search_default_expiring_soon': 1}</field>
+        <field name="search_view_id" ref="view_service_contract_search"/>
+    </record>
+
+</odoo>

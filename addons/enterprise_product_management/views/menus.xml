@@ -59,4 +59,28 @@
               parent="menu_epm_repair_management" 
               action="action_material_repair"
               sequence="10"/>
+
+    <!-- 保養項目管理 -->
+    <menuitem id="menu_epm_maintenance_management" 
+              name="保養項目管理" 
+              parent="menu_epm_root" 
+              sequence="40"/>
+
+    <menuitem id="menu_epm_maintenance_items" 
+              name="保養項目" 
+              parent="menu_epm_maintenance_management" 
+              action="action_maintenance_item"
+              sequence="10"/>
+
+    <menuitem id="menu_epm_maintenance_items_by_product" 
+              name="依產品分組" 
+              parent="menu_epm_maintenance_management" 
+              action="action_maintenance_item_by_product"
+              sequence="20"/>
+
+    <menuitem id="menu_epm_maintenance_items_public" 
+              name="外部保養項目" 
+              parent="menu_epm_maintenance_management" 
+              action="action_maintenance_item_public"
+              sequence="30"/>
 </odoo>

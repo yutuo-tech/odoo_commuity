@@ -3,3 +3,5 @@ access_epm_material_category_user,epm.material.category.user,model_epm_material_
 access_epm_material_category_manager,epm.material.category.manager,model_epm_material_category,base.group_system,1,1,1,1
 access_epm_material_repair_user,epm.material.repair.user,model_epm_material_repair,base.group_user,1,0,0,0
 access_epm_material_repair_manager,epm.material.repair.manager,model_epm_material_repair,base.group_system,1,1,1,1
+access_epm_maintenance_item_user,epm.maintenance.item.user,model_epm_maintenance_item,base.group_user,1,0,0,0
+access_epm_maintenance_item_manager,epm.maintenance.item.manager,model_epm_maintenance_item,base.group_system,1,1,1,1

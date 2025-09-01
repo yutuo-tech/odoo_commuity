@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- 保養檢查項目表單視圖 -->
+    <record id="view_maintenance_checklist_form" model="ir.ui.view">
+        <field name="name">maintenance.checklist.form</field>
+        <field name="model">maintenance.checklist</field>
+        <field name="arch" type="xml">
+            <form string="保養檢查項目">
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="項目名稱"/>
+                        </h1>
+                        <h2>
+                            <field name="product_id" placeholder="選擇適用產品"/>
+                        </h2>
+                    </div>
+                    
+                    <group>
+                        <group name="basic_info" string="基本資訊">
+                            <field name="item_code"/>
+                            <field name="variant_id" domain="[('product_tmpl_id', '=', product_id)]"/>
+                            <field name="maintenance_type"/>
+                            <field name="category"/>
+                            <field name="estimated_time"/>
+                        </group>
+                        <group name="display_settings" string="顯示設定">
+                            <field name="sequence"/>
+                            <field name="is_display"/>
+                            <field name="is_required"/>
+                            <field name="active"/>
+                        </group>
+                    </group>
+                    
+                    <notebook>
+                        <page string="保養要點" name="maintenance_points">
+                            <field name="maintenance_points" placeholder="填寫詳細的保養要點..."/>
+                        </page>
+                        <page string="詳細說明" name="description">
+                            <field name="description" placeholder="填寫詳細說明..."/>
+                        </page>
+                        <page string="備註" name="notes">
+                            <field name="notes" placeholder="其他備註..."/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- 保養檢查項目列表視圖 -->
+    <record id="view_maintenance_checklist_list" model="ir.ui.view">
+        <field name="name">maintenance.checklist.list</field>
+        <field name="model">maintenance.checklist</field>
+        <field name="arch" type="xml">
+            <list string="保養檢查項目" default_order="product_id, maintenance_type, sequence">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="product_id"/>
+                <field name="variant_id"/>
+                <field name="maintenance_type"/>
+                <field name="category"/>
+                <field name="item_code"/>
+                <field name="estimated_time" sum="總時間(分)"/>
+                <field name="is_required"/>
+                <field name="is_display"/>
+                <field name="active"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- 保養檢查項目看板視圖 -->
+    <record id="view_maintenance_checklist_kanban" model="ir.ui.view">
+        <field name="name">maintenance.checklist.kanban</field>
+        <field name="model">maintenance.checklist</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="maintenance_type">
+                <field name="name"/>
+                <field name="product_id"/>
+                <field name="variant_id"/>
+                <field name="maintenance_type"/>
+                <field name="category"/>
+                <field name="estimated_time"/>
+                <field name="is_required"/>
+                <field name="is_display"/>
+                <templates>
+                    <t t-name="card">
+                        <div class="oe_kanban_card oe_kanban_global_click">
+                            <div class="oe_kanban_content">
+                                <div class="o_kanban_record_top">
+                                    <div class="o_kanban_record_headings">
+                                        <strong class="o_kanban_record_title">
+                                            <field name="name"/>
+                                        </strong>
+                                    </div>
+                                </div>
+                                <div class="o_kanban_record_body">
+                                    <div>產品: <field name="product_id"/></div>
+                                    <div t-if="record.variant_id.value">
+                                        型號: <field name="variant_id"/>
+                                    </div>
+                                    <div t-if="record.category.value">
+                                        分類: <field name="category"/>
+                                    </div>
+                                    <div>
+                                        預估時間: <field name="estimated_time"/>分鐘
+                                    </div>
+                                    <div class="mt-2">
+                                        <span t-if="record.is_required.raw_value" class="badge badge-danger">必要</span>
+                                        <span t-if="record.is_display.raw_value" class="badge badge-info">顯示</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- 保養檢查項目搜尋視圖 -->
+    <record id="view_maintenance_checklist_search" model="ir.ui.view">
+        <field name="name">maintenance.checklist.search</field>
+        <field name="model">maintenance.checklist</field>
+        <field name="arch" type="xml">
+            <search string="檢查項目搜尋">
+                <field name="name" string="項目名稱"/>
+                <field name="product_id" string="產品"/>
+                <field name="item_code" string="項目代碼"/>
+                <field name="maintenance_points" string="保養要點"/>
+                
+                <separator/>
+                <filter string="例行保養" name="routine" domain="[('maintenance_type', '=', 'routine')]"/>
+                <filter string="季度保養" name="quarterly" domain="[('maintenance_type', '=', 'quarterly')]"/>
+                <filter string="半年保養" name="semi_annual" domain="[('maintenance_type', '=', 'semi_annual')]"/>
+                <filter string="年度保養" name="annual" domain="[('maintenance_type', '=', 'annual')]"/>
+                <filter string="大保養" name="major" domain="[('maintenance_type', '=', 'major')]"/>
+                
+                <separator/>
+                <filter string="必要項目" name="required" domain="[('is_required', '=', True)]"/>
+                <filter string="顯示在工單" name="display" domain="[('is_display', '=', True)]"/>
+                <filter string="已啟用" name="active" domain="[('active', '=', True)]"/>
+                
+                <separator/>
+                <filter string="外觀檢查" name="visual" domain="[('category', '=', 'visual')]"/>
+                <filter string="功能測試" name="functional" domain="[('category', '=', 'functional')]"/>
+                <filter string="清潔保養" name="cleaning" domain="[('category', '=', 'cleaning')]"/>
+                <filter string="零件更換" name="replacement" domain="[('category', '=', 'replacement')]"/>
+                <filter string="校正調整" name="calibration" domain="[('category', '=', 'calibration')]"/>
+                
+                <group expand="0" string="分組">
+                    <filter string="產品" name="group_product" domain="[]" context="{'group_by': 'product_id'}"/>
+                    <filter string="保養類型" name="group_maintenance_type" domain="[]" context="{'group_by': 'maintenance_type'}"/>
+                    <filter string="項目分類" name="group_category" domain="[]" context="{'group_by': 'category'}"/>
+                    <filter string="必要性" name="group_required" domain="[]" context="{'group_by': 'is_required'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- 動作定義 -->
+    <record id="action_maintenance_checklist" model="ir.actions.act_window">
+        <field name="name">保養檢查項目</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">maintenance.checklist</field>
+        <field name="view_mode">list,kanban,form</field>
+        <field name="search_view_id" ref="view_maintenance_checklist_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                建立第一個保養檢查項目
+            </p>
+            <p>
+                定義不同產品和保養類型的標準檢查項目，為工單系統提供結構化的檢查清單。
+            </p>
+        </field>
+    </record>
+
+    <!-- 例行保養項目動作 -->
+    <record id="action_maintenance_checklist_routine" model="ir.actions.act_window">
+        <field name="name">例行保養項目</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">maintenance.checklist</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('maintenance_type', '=', 'routine')]</field>
+        <field name="context">{'search_default_routine': 1, 'default_maintenance_type': 'routine'}</field>
+        <field name="search_view_id" ref="view_maintenance_checklist_search"/>
+    </record>
+
+    <!-- 必要項目動作 -->
+    <record id="action_maintenance_checklist_required" model="ir.actions.act_window">
+        <field name="name">必要檢查項目</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">maintenance.checklist</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('is_required', '=', True)]</field>
+        <field name="context">{'search_default_required': 1}</field>
+        <field name="search_view_id" ref="view_maintenance_checklist_search"/>
+    </record>
+
+</odoo>

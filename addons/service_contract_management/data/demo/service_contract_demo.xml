@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- 服務合約示範數據 -->
+    <record id="demo_contract_01" model="service.contract">
+        <field name="name">CONTRACT-2024-001</field>
+        <field name="contract_name">台北辦公室設備保固合約</field>
+        <field name="contract_type">warranty</field>
+        <field name="partner_id" ref="base.res_partner_1"/>
+        <field name="state">active</field>
+        <field name="sign_date">2024-02-20</field>
+        <field name="start_date">2024-02-20</field>
+        <field name="end_date">2025-02-20</field>
+        <field name="total_amount">15000.00</field>
+        <field name="currency_id" ref="base.TWD"/>
+        <field name="payment_term">monthly</field>
+        <field name="acceptance_date">2024-02-25</field>
+        <field name="remarks">一年期設備保固合約，包含定期維護和故障維修</field>
+    </record>
+
+    <record id="demo_contract_02" model="service.contract">
+        <field name="name">CONTRACT-2024-002</field>
+        <field name="contract_name">生產設備維護合約</field>
+        <field name="contract_type">maintenance</field>
+        <field name="partner_id" ref="base.res_partner_2"/>
+        <field name="state">active</field>
+        <field name="sign_date">2024-03-01</field>
+        <field name="start_date">2024-03-01</field>
+        <field name="end_date">2025-03-01</field>
+        <field name="total_amount">25000.00</field>
+        <field name="currency_id" ref="base.TWD"/>
+        <field name="payment_term">quarterly</field>
+        <field name="acceptance_date">2024-03-05</field>
+        <field name="billing_date">2024-03-01</field>
+        <field name="billed_amount">25000.00</field>
+        <field name="payment_received_date">2024-03-10</field>
+        <field name="received_amount">25000.00</field>
+        <field name="remarks">季付維護合約，包含預防性保養和緊急維修服務</field>
+    </record>
+
+    <record id="demo_contract_03" model="service.contract">
+        <field name="name">CONTRACT-2024-003</field>
+        <field name="contract_name">全責保固服務合約</field>
+        <field name="contract_type">full_service</field>
+        <field name="partner_id" ref="base.res_partner_3"/>
+        <field name="state">confirmed</field>
+        <field name="sign_date">2024-04-15</field>
+        <field name="start_date">2024-05-01</field>
+        <field name="end_date">2026-05-01</field>
+        <field name="total_amount">80000.00</field>
+        <field name="currency_id" ref="base.TWD"/>
+        <field name="payment_term">annual</field>
+        <field name="remarks">兩年期全責保固合約，包含所有維護、保養、零件更換</field>
+    </record>
+
+    <record id="demo_contract_04" model="service.contract">
+        <field name="name">CONTRACT-2024-004</field>
+        <field name="contract_name">設備租賃合約</field>
+        <field name="contract_type">rental</field>
+        <field name="partner_id" ref="base.res_partner_4"/>
+        <field name="state">draft</field>
+        <field name="sign_date">2024-12-01</field>
+        <field name="start_date">2025-01-01</field>
+        <field name="end_date">2025-12-31</field>
+        <field name="total_amount">60000.00</field>
+        <field name="currency_id" ref="base.TWD"/>
+        <field name="payment_term">monthly</field>
+        <field name="remarks">一年期設備租賃合約草稿，月付租金</field>
+    </record>
+
+    <record id="demo_contract_05" model="service.contract">
+        <field name="name">CONTRACT-2023-005</field>
+        <field name="contract_name">舊設備保固合約</field>
+        <field name="contract_type">warranty</field>
+        <field name="partner_id" ref="base.res_partner_1"/>
+        <field name="state">expired</field>
+        <field name="sign_date">2023-01-10</field>
+        <field name="start_date">2023-01-10</field>
+        <field name="end_date">2024-01-10</field>
+        <field name="total_amount">12000.00</field>
+        <field name="currency_id" ref="base.TWD"/>
+        <field name="payment_term">annual</field>
+        <field name="acceptance_date">2023-01-15</field>
+        <field name="billing_date">2023-01-10</field>
+        <field name="billed_amount">12000.00</field>
+        <field name="payment_received_date">2023-01-20</field>
+        <field name="received_amount">12000.00</field>
+        <field name="remarks">已到期的保固合約，可參考續約</field>
+    </record>
+
+    <!-- 合約和設備關聯 -->
+    <function model="service.contract" name="write">
+        <value model="service.contract" search="[('id', '=', ref('demo_contract_01'))]"/>
+        <value eval="{'equipment_ids': [(4, ref('demo_equipment_01'))]}"/>
+    </function>
+
+    <function model="service.contract" name="write">
+        <value model="service.contract" search="[('id', '=', ref('demo_contract_02'))]"/>
+        <value eval="{'equipment_ids': [(4, ref('demo_equipment_02')), (4, ref('demo_equipment_04'))]}"/>
+    </function>
+
+    <function model="service.contract" name="write">
+        <value model="service.contract" search="[('id', '=', ref('demo_contract_03'))]"/>
+        <value eval="{'equipment_ids': [(4, ref('demo_equipment_03'))]}"/>
+    </function>
+
+</odoo>
