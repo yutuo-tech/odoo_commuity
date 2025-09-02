@@ -71,12 +71,13 @@
     'demo': [
         # 'demo/field_service_demo.xml',
     ],
-    # 'assets': {
-    #     'web.assets_backend': [
-    #         'field_service_order/static/src/components/**/*',
-    #         'field_service_order/static/src/scss/field_service.scss',
-    #     ],
-    # },
+    'assets': {
+        'web.assets_backend': [
+            # 在表單控制器樣式之後載入，確保能覆蓋核心的 margin-right: auto
+            ('after', 'web/static/src/views/form/form_controller.scss', 
+             'field_service_order/static/src/scss/field_service_responsive.scss'),
+        ],
+    },
     'installable': True,
     'application': True,
     'auto_install': False,

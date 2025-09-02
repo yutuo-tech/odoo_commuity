@@ -7,6 +7,9 @@
         <field name="model">res.partner</field>
         <field name="inherit_id" ref="base.view_partner_tree"/>
         <field name="arch" type="xml">
+            <list position="attributes">
+                <attribute name="class">o_partner_list_medical o_medical_responsive_table</attribute>
+            </list>
             
             <!-- 在清單中新增相關欄位 -->
             <field name="complete_name" position="after">
@@ -53,6 +56,9 @@
         <field name="model">res.partner</field>
         <field name="inherit_id" ref="base.view_partner_form"/>
         <field name="arch" type="xml">
+            <form position="attributes">
+                <attribute name="class">o_medical_service_responsive</attribute>
+            </form>
             <!-- 按照 Employee 模組設計，在職位欄位後添加部門選擇 -->
             <field name="function" position="after">
                 <field name="x_department_id" 
@@ -67,7 +73,7 @@
             <xpath expr="//notebook" position="inside">
                 <page name="department_management" 
                       string="部門架構" 
-                      invisible="not is_company">
+                      invisible="not is_company" class="o_department_management">
                     <div class="o_setting_box">
                         <div class="o_setting_left_pane">
                             <field name="code" invisible="1"/>
@@ -86,6 +92,7 @@
                            context="{'default_company_id': id}"/>
                 </page>
             </xpath>
+            
         </field>
     </record>
 

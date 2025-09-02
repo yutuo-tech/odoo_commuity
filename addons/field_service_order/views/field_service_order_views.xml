@@ -6,7 +6,7 @@
         <field name="name">服務工單表單</field>
         <field name="model">field.service.order</field>
         <field name="arch" type="xml">
-            <form string="服務工單">
+            <form string="服務工單" class="o_field_service_responsive">
                 <header>
                     <!-- 狀態按鈕 -->
                     <button name="action_schedule" type="object" string="排程" 
@@ -43,7 +43,7 @@
                 </div>
                 
                 <!-- 智能按鈕區域 -->
-                <div class="oe_button_box" name="button_box">                    
+                <div class="oe_button_box o_field_service_button_box" name="button_box">                    
                     <button name="action_view_customer_service_sheet" type="object" 
                             class="oe_stat_button" icon="fa-file-o"
                             invisible="not has_customer_service_sheet">
@@ -53,66 +53,80 @@
                 
                 <!-- 主要內容區域 -->
                 <sheet>
-                    <group>
-                        <group name="order_info" string="工單基本資訊">
-                            <field name="order_type" widget="radio" options="{'horizontal': true}"/>
-                            <field name="priority" widget="priority"/>
-                            <field name="partner_id" context="{'res_partner_search_mode': 'customer'}"/>
-                            <field name="department_id" 
-                                   domain="[('company_id', '=', partner_id)]"
-                                   invisible="not partner_id"/>
-                            <field name="contact_id" 
-                                   domain="[('company_id', '=', partner_id)]"
-                                   invisible="not partner_id"/>
-                            <field name="company_id" groups="base.group_multi_company"/>
-                            <field name="has_customer_service_sheet" invisible="1"/>
-                        </group>
+                    <div class="row">
+                        <div class="col-12 col-md-6">
+                            <group name="order_info" string="工單基本資訊">
+                                <field name="order_type" widget="radio" options="{'horizontal': true}"/>
+                                <field name="priority" widget="priority"/>
+                                <field name="partner_id" context="{'res_partner_search_mode': 'customer'}"/>
+                                <field name="department_id" 
+                                       domain="[('company_id', '=', partner_id)]"
+                                       invisible="not partner_id"/>
+                                <field name="contact_id" 
+                                       domain="[('company_id', '=', partner_id)]"
+                                       invisible="not partner_id"/>
+                                <field name="company_id" groups="base.group_multi_company"/>
+                                <field name="has_customer_service_sheet" invisible="1"/>
+                            </group>
+                        </div>
                         
-                        <group name="dates" string="時間資訊">
-                            <field name="date"/>
-                            <field name="scheduled_date"/>
-                            <field name="start_date"/>
-                            <field name="end_date"/>
-                            <field name="actual_hours" readonly="1" string="實際工時(小時)"/>
-                        </group>
-                    </group>
+                        <div class="col-12 col-md-6">
+                            <group name="dates" string="時間資訊">
+                                <field name="date"/>
+                                <field name="scheduled_date"/>
+                                <field name="start_date"/>
+                                <field name="end_date"/>
+                                <field name="actual_hours" readonly="1" string="實際工時(小時)"/>
+                            </group>
+                        </div>
+                    </div>
                     
                     <!-- 設備和服務類型區域 -->
-                    <group string="設備和服務資訊">
-                        <group name="equipment_info">
-                            <field name="equipment_id"/>
-                            <field name="product_variant_id" string="設備型號"/>
-                            <field name="serial_number"/>
-                            <field name="software_version"/>
-                            <field name="unit_number"/>
-                            <field name="hospital_asset_number"/>
-                            <field name="installation_location"/>
-                            <field name="contract_type" readonly="1"/>
-                            <field name="contract_code" readonly="1"/>
-                            
-                            <!-- 保養工單特有欄位 -->
-                            <field name="maintenance_type" 
-                                   invisible="order_type != 'maintenance'"
-                                   required="order_type == 'maintenance'"/>
-                            <field name="last_maintenance_date" 
-                                   invisible="order_type != 'maintenance'"/>
-                            <field name="next_maintenance_date" 
-                                   invisible="order_type != 'maintenance'"/>
-                            
-                            <!-- 維修工單特有欄位 -->
-                            <field name="failure_symptom" 
-                                   invisible="order_type != 'repair'"/>
-                            <field name="repair_urgency" 
-                                   invisible="order_type != 'repair'"/>
-                        </group>
-                        
-                        <group name="assignment">
-                            <field name="technician_id" required="1"/>
-                            <field name="team_id"/>
-                            <field name="estimated_duration"/>
-                            <field name="actual_duration" invisible="state in ['draft', 'scheduled', 'assigned']"/>
-                        </group>
-                    </group>
+                    <div class="row">
+                        <div class="col-12">
+                            <group string="設備和服務資訊" class="o_field_service_equipment">
+                                <div class="row">
+                                    <div class="col-12 col-lg-8">
+                                        <group name="equipment_info">
+                                            <field name="equipment_id"/>
+                                            <field name="product_variant_id" string="設備型號"/>
+                                            <field name="serial_number"/>
+                                            <field name="software_version"/>
+                                            <field name="unit_number"/>
+                                            <field name="hospital_asset_number"/>
+                                            <field name="installation_location"/>
+                                            <field name="contract_type" readonly="1"/>
+                                            <field name="contract_code" readonly="1"/>
+                                            
+                                            <!-- 保養工單特有欄位 -->
+                                            <field name="maintenance_type" 
+                                                   invisible="order_type != 'maintenance'"
+                                                   required="order_type == 'maintenance'"/>
+                                            <field name="last_maintenance_date" 
+                                                   invisible="order_type != 'maintenance'"/>
+                                            <field name="next_maintenance_date" 
+                                                   invisible="order_type != 'maintenance'"/>
+                                            
+                                            <!-- 維修工單特有欄位 -->
+                                            <field name="failure_symptom" 
+                                                   invisible="order_type != 'repair'"/>
+                                            <field name="repair_urgency" 
+                                                   invisible="order_type != 'repair'"/>
+                                        </group>
+                                    </div>
+                                    
+                                    <div class="col-12 col-lg-4">
+                                        <group name="assignment">
+                                            <field name="technician_id" required="1"/>
+                                            <field name="team_id"/>
+                                            <field name="estimated_duration"/>
+                                            <field name="actual_duration" invisible="state in ['draft', 'scheduled', 'assigned']"/>
+                                        </group>
+                                    </div>
+                                </div>
+                            </group>
+                        </div>
+                    </div>
                     
                     <!-- 工作描述 -->
                     <group string="工作內容">
@@ -163,7 +177,7 @@
                     <notebook>
                         <!-- 檢查清單頁籤 -->
                         <page string="檢查清單" name="checklist" 
-                              invisible="order_type != 'maintenance'">
+                              invisible="order_type != 'maintenance'" class="o_field_service_checklist">
                             <!-- 保養項目清單 - 暫時註解，待模組載入後再啟用
                             <group string="保養項目" invisible="order_type != 'maintenance'">
                                 <field name="maintenance_item_ids" nolabel="1" readonly="1">
@@ -183,11 +197,11 @@
                                 <field name="checklist_line_ids" nolabel="1">
                                     <list editable="bottom">
                                         <field name="name"/>
-                                        <field name="key_points"/>
-                                        <field name="description"/>
+                                        <field name="key_points" optional="hide"/>
+                                        <field name="description" optional="show"/>
                                         <field name="is_checked" widget="boolean_toggle"/>
-                                        <field name="notes"/>
-                                        <field name="show_on_report" widget="boolean_toggle"/>
+                                        <field name="notes" optional="show"/>
+                                        <field name="show_on_report" widget="boolean_toggle" optional="hide"/>
                                     </list>
                                 </field>
                             </group>
@@ -203,13 +217,13 @@
                         </page>
                         
                         <!-- 費用頁籤 -->
-                        <page string="費用記錄" name="expenses">
+                        <page string="費用記錄" name="expenses" class="o_field_service_expenses">
                             <field name="expense_ids">
                                 <list editable="bottom">
                                     <field name="expense_type"/>
                                     <field name="description"/>
                                     <field name="amount"/>
-                                    <field name="currency_id"/>
+                                    <field name="currency_id" optional="hide"/>
                                 </list>
                             </field>
                             
@@ -255,28 +269,33 @@
                     </notebook>
                     
                     <!-- 工作日誌特殊區域 -->
-                    <div invisible="order_type != 'work_log'">
+                    <div invisible="order_type != 'work_log'" class="o_field_service_work_log">
                         <separator string="工作日誌詳情"/>
-                        <group>
-                            <group>
-                                <field name="work_category"/>
-                                <field name="work_hours"/>
-                            </group>
-                            <group>
-                                <field name="work_location"/>
-                                <field name="weather_condition"/>
-                            </group>
-                        </group>
+                        <div class="row">
+                            <div class="col-12 col-md-6">
+                                <group>
+                                    <field name="work_category"/>
+                                    <field name="work_hours"/>
+                                </group>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <group>
+                                    <field name="work_location"/>
+                                    <field name="weather_condition"/>
+                                </group>
+                            </div>
+                        </div>
                         <field name="daily_work_summary" placeholder="今日工作內容詳述..."/>
                     </div>
                 </sheet>
                 
-                <!-- Chatter 訊息追蹤 -->
+                <!-- Chatter 訊息追蹤 - 隱藏不需要的功能
                 <div class="oe_chatter">
                     <field name="message_follower_ids"/>
                     <field name="activity_ids"/>
                     <field name="message_ids"/>
                 </div>
+                -->
             </form>
         </field>
     </record>
@@ -385,7 +404,7 @@
         <field name="name">服務工單看板</field>
         <field name="model">field.service.order</field>
         <field name="arch" type="xml">
-            <kanban default_group_by="state" class="o_kanban_small_column o_opportunity_kanban" 
+            <kanban default_group_by="state" class="o_kanban_small_column o_opportunity_kanban o_field_service_kanban" 
                     sample="1" quick_create="false">
                 <field name="id"/>
                 <field name="name"/>

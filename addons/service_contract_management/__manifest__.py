@@ -49,6 +49,14 @@
         'views/menu.xml',
     ],
     
+    'assets': {
+        'web.assets_backend': [
+            # 在表單控制器樣式之後載入，確保能覆蓋核心的 margin-right: auto
+            ('after', 'web/static/src/views/form/form_controller.scss', 
+             'service_contract_management/static/src/scss/contract_responsive.scss'),
+        ],
+    },
+    
     'demo': [
         'data/demo/service_equipment_demo.xml',
         'data/demo/service_contract_demo.xml',

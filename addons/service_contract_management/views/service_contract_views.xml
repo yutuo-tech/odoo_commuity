@@ -66,15 +66,15 @@
                     </group>
                     
                     <notebook>
-                        <page string="涵蓋設備" name="equipment">
+                        <page string="涵蓋設備" name="equipment" class="o_contract_equipment_list">
                             <field name="equipment_ids">
                                 <list editable="bottom">
                                     <field name="name"/>
-                                    <field name="product_id"/>
-                                    <field name="variant_id"/>
-                                    <field name="partner_id"/>
+                                    <field name="product_id" optional="show"/>
+                                    <field name="variant_id" optional="hide"/>
+                                    <field name="partner_id" optional="show"/>
                                     <field name="status"/>
-                                    <field name="warranty_end_date"/>
+                                    <field name="warranty_end_date" optional="hide"/>
                                 </list>
                             </field>
                         </page>
@@ -96,11 +96,13 @@
                         </page>
                     </notebook>
                 </sheet>
+                <!-- Chatter 隱藏不需要的功能
                 <div class="oe_chatter">
                     <field name="message_follower_ids"/>
                     <field name="activity_ids"/>
                     <field name="message_ids"/>
                 </div>
+                -->
             </form>
         </field>
     </record>
@@ -110,7 +112,7 @@
         <field name="name">service.contract.list</field>
         <field name="model">service.contract</field>
         <field name="arch" type="xml">
-            <list string="服務合約" default_order="name desc">
+            <list string="服務合約" default_order="name desc" class="o_contract_list_responsive">
                 <field name="name"/>
                 <field name="contract_name"/>
                 <field name="contract_type"/>
@@ -136,7 +138,7 @@
         <field name="name">service.contract.kanban</field>
         <field name="model">service.contract</field>
         <field name="arch" type="xml">
-            <kanban default_group_by="state">
+            <kanban default_group_by="state" class="o_contract_kanban">
                 <field name="name"/>
                 <field name="contract_name"/>
                 <field name="partner_id"/>

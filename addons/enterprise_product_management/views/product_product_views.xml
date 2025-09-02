@@ -6,8 +6,11 @@
         <field name="model">product.product</field>
         <field name="inherit_id" ref="product.product_normal_form_view"/>
         <field name="arch" type="xml">
+            <form position="attributes">
+                <attribute name="class">o_product_management_responsive</attribute>
+            </form>
             <xpath expr="//field[@name='barcode']" position="after">
-                <field name="x_material_category_ids" widget="many2many_tags"/>
+                <field name="x_material_category_ids" widget="many2many_tags" class="o_field_many2many_tags_responsive"/>
                 <field name="x_stock_quantity"/>
             </xpath>
         </field>
@@ -19,6 +22,9 @@
         <field name="model">product.product</field>
         <field name="inherit_id" ref="product.product_product_tree_view"/>
         <field name="arch" type="xml">
+            <list position="attributes">
+                <attribute name="class">o_product_list_responsive</attribute>
+            </list>
             <xpath expr="//field[@name='qty_available']" position="before">
                 <field name="x_material_category_ids" widget="many2many_tags" optional="show"/>
                 <field name="x_stock_quantity" optional="hide"/>

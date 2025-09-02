@@ -14,7 +14,8 @@ class CompanyContact(models.Model):
     - 與服務工單和設備管理整合
     """
     _name = 'company.contact'
-    _inherit = ['mail.thread', 'mail.activity.mixin']
+    # 移除 mail 繼承以避免自動 Chatter
+    # _inherit = ['mail.thread', 'mail.activity.mixin']
     _description = '聯絡人'
     _order = 'company_id, department_id, name'
     _rec_name = 'display_name'

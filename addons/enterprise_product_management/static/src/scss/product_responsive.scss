@@ -1,0 +1,261 @@
+/*
+ * Enterprise Product Management - 響應式設計樣式
+ * 優化產品管理模組的 RWD 顯示效果
+ */
+
+/* === 通用表單居中樣式 - 針對 XXL 螢幕特殊處理 === */
+.o_form_view.o_product_management_responsive,
+.o_form_view.o_material_repair_responsive,
+.o_form_view.o_maintenance_item_responsive,
+.o_form_view.o_material_category_responsive {
+    
+    // XXL 螢幕時（Chatter 側邊模式）的表單居中
+    &.o_xxl_form_view {
+        .o_form_sheet_bg {
+            margin-left: auto !important;
+            margin-right: auto !important;
+            max-width: none; // 自適應寬度
+        }
+    }
+    
+    // 一般大螢幕的表單居中
+    .o_form_sheet_bg {
+        margin-left: auto;
+        margin-right: auto;
+        max-width: 1200px;
+    }
+}
+
+/* === 產品表單響應式佈局 === */
+.o_product_management_responsive {
+    
+    /* 大螢幕優化 - 產品表單不會被擠到左邊 */
+    @media (min-width: 1400px) {
+        .o_form_sheet_bg {
+            .o_form_sheet {
+                max-width: 1200px;
+                margin: 0 auto;
+            }
+        }
+        
+        /* 產品變體表單優化 */
+        .o_form_view {
+            .o_group {
+                &.o_inner_group {
+                    > .o_wrap_field {
+                        > .o_cell_label {
+                            width: 140px;
+                            min-width: 100px;
+                        }
+                        
+                        > .o_cell {
+                            min-width: 180px;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    /* 中等螢幕 (平板) */
+    @media (min-width: 768px) and (max-width: 1399px) {
+        .o_form_sheet {
+            padding: 16px;
+        }
+        
+        /* 物料種類標籤優化 */
+        .o_field_many2many_tags {
+            .o_tag {
+                margin: 2px;
+                font-size: 12px;
+            }
+        }
+    }
+    
+    /* 小螢幕 (手機) */
+    @media (max-width: 767px) {
+        .o_form_sheet {
+            padding: 8px;
+        }
+        
+        /* 物料種類標籤在小螢幕上的優化 */
+        .o_field_many2many_tags {
+            .o_tag {
+                display: block;
+                margin: 2px 0;
+                padding: 4px 8px;
+            }
+        }
+        
+        /* 庫存數量字段優化 */
+        .o_field_integer {
+            text-align: center;
+            font-weight: bold;
+        }
+    }
+}
+
+/* === 產品列表視圖優化 === */
+.o_list_view {
+    &.o_product_list_responsive {
+        @media (max-width: 992px) {
+            /* 隱藏不重要的欄位 */
+            .o_list_table {
+                .o_data_cell[data-name="x_stock_quantity"] {
+                    display: none;
+                }
+            }
+        }
+        
+        @media (max-width: 768px) {
+            /* 進一步隱藏欄位，只保留關鍵資訊 */
+            .o_list_table {
+                .o_data_cell:not([data-name="name"]):not([data-name="x_material_category_ids"]) {
+                    display: none;
+                }
+            }
+            
+            /* 產品名稱欄位優化 */
+            .o_data_cell[data-name="name"] {
+                font-weight: bold;
+                font-size: 14px;
+            }
+            
+            /* 物料種類標籤優化 */
+            .o_data_cell[data-name="x_material_category_ids"] {
+                .o_tag {
+                    font-size: 10px;
+                    padding: 2px 4px;
+                    margin: 1px;
+                }
+            }
+        }
+    }
+}
+
+/* === 搜尋視圖優化 === */
+.o_search_panel {
+    @media (max-width: 768px) {
+        /* 搜尋面板在小螢幕收合 */
+        .o_search_panel_section {
+            .o_search_panel_section_header {
+                font-size: 14px;
+                padding: 8px;
+            }
+            
+            .o_search_panel_field {
+                font-size: 12px;
+            }
+        }
+    }
+}
+
+/* === 物料種類選擇器優化 === */
+.o_field_many2many_tags_responsive {
+    @media (max-width: 576px) {
+        /* 標籤在極小螢幕上垂直排列 */
+        .o_tag {
+            display: block;
+            width: 100%;
+            text-align: center;
+            margin: 2px 0;
+        }
+        
+        /* 新增按鈕優化 */
+        .o_input_dropdown {
+            width: 100%;
+            
+            input {
+                width: 100%;
+            }
+        }
+    }
+}
+
+/* === 維修問題表單優化 === */
+.o_material_repair_responsive {
+    /* 大螢幕表單居中 */
+    @media (min-width: 1400px) {
+        .o_form_sheet_bg {
+            .o_form_sheet {
+                max-width: 1200px;
+                margin: 0 auto;
+            }
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .o_group {
+            .o_group_col_6 {
+                width: 100%;
+            }
+        }
+        
+        /* 價格字段特殊處理 */
+        .o_field_monetary {
+            text-align: right;
+            font-weight: bold;
+            font-size: 16px;
+        }
+    }
+}
+
+/* === 保養項目表單優化 === */
+.o_maintenance_item_responsive {
+    /* 大螢幕表單居中 */
+    @media (min-width: 1400px) {
+        .o_form_sheet_bg {
+            .o_form_sheet {
+                max-width: 1200px;
+                margin: 0 auto;
+            }
+        }
+    }
+    
+    .o_group {
+        @media (max-width: 768px) {
+            flex-direction: column;
+            
+            .o_group_col_6 {
+                width: 100%;
+            }
+        }
+    }
+    
+    /* 重點項目文字區域 */
+    .o_field_text {
+        @media (max-width: 768px) {
+            min-height: 100px;
+            font-size: 14px;
+        }
+    }
+}
+
+/* === 物料種類表單優化 === */
+.o_material_category_responsive {
+    /* 大螢幕表單居中 */
+    @media (min-width: 1400px) {
+        .o_form_sheet_bg {
+            .o_form_sheet {
+                max-width: 1200px;
+                margin: 0 auto;
+            }
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .o_form_sheet {
+            .o_group {
+                .o_field_char {
+                    font-size: 16px;
+                    padding: 8px;
+                }
+                
+                .o_field_text {
+                    min-height: 80px;
+                    font-size: 14px;
+                }
+            }
+        }
+    }
+}
