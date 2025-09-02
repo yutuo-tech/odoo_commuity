@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- 主選單 -->
+    <menuitem id="field_service_main_menu" 
+              name="現場服務" 
+              sequence="10" 
+              web_icon="field_service_order,static/description/icon.png"/>
+
+    <!-- 工單管理選單群組 -->
+    <menuitem id="field_service_orders_menu" 
+              name="工單管理" 
+              parent="field_service_main_menu" 
+              sequence="10"/>
+
+    <!-- 服務工單選單 -->
+    <menuitem id="field_service_order_menu" 
+              name="所有工單" 
+              parent="field_service_orders_menu" 
+              action="field_service_order_action" 
+              sequence="10"/>
+
+    <!-- 保養工單選單 -->
+    <menuitem id="maintenance_order_menu" 
+              name="保養工單" 
+              parent="field_service_orders_menu" 
+              action="maintenance_order_action" 
+              sequence="20"/>
+
+    <!-- 維修工單選單 -->
+    <menuitem id="repair_order_menu" 
+              name="維修工單" 
+              parent="field_service_orders_menu" 
+              action="repair_order_action" 
+              sequence="30"/>
+
+    <!-- 工作日誌選單 -->
+    <menuitem id="work_log_menu" 
+              name="工作日誌" 
+              parent="field_service_orders_menu" 
+              action="work_log_action" 
+              sequence="40"/>
+
+    <!-- 知識庫選單群組 -->
+    <menuitem id="field_service_knowledge_menu" 
+              name="知識庫" 
+              parent="field_service_main_menu" 
+              sequence="20"/>
+
+    <!-- 已移除解決方案庫、問題分類和檢查清單模板選單 -->
+    <!-- 改用 enterprise_product_management 模組的維修問題庫和保養項目 -->
+
+    <!-- 記錄管理選單群組 -->
+    <menuitem id="field_service_records_menu" 
+              name="記錄管理" 
+              parent="field_service_main_menu" 
+              sequence="30"/>
+
+    <!-- 費用記錄選單 -->
+    <menuitem id="field_service_expense_menu" 
+              name="費用記錄" 
+              parent="field_service_records_menu" 
+              action="field_service_expense_action" 
+              sequence="10"/>
+
+    <!-- 零件更換記錄選單 -->
+    <menuitem id="field_service_part_replacement_menu" 
+              name="零件更換記錄" 
+              parent="field_service_records_menu" 
+              action="field_service_part_replacement_action" 
+              sequence="20"/>
+
+    <!-- 檢查清單項目選單 -->
+    <menuitem id="field_service_checklist_line_menu" 
+              name="檢查清單項目" 
+              parent="field_service_records_menu" 
+              action="field_service_checklist_line_action" 
+              sequence="30"/>
+
+    <!-- 配置選單群組 -->
+    <menuitem id="field_service_config_menu" 
+              name="配置" 
+              parent="field_service_main_menu" 
+              sequence="90" 
+              groups="field_service_order.group_field_service_manager"/>
+
+    <!-- 服務標籤選單 -->
+    <menuitem id="field_service_tag_menu" 
+              name="服務標籤" 
+              parent="field_service_config_menu" 
+              action="field_service_tag_action" 
+              sequence="10"/>
+
+    <!-- 標籤分類選單 -->
+    <menuitem id="field_service_tag_category_menu" 
+              name="標籤分類" 
+              parent="field_service_config_menu" 
+              action="field_service_tag_category_action" 
+              sequence="20"/>
+
+    <!-- 費用類型選單 -->
+    <menuitem id="field_service_expense_type_menu" 
+              name="費用類型" 
+              parent="field_service_config_menu" 
+              action="field_service_expense_type_action" 
+              sequence="30"/>
+
+    <!-- 工具選單群組 -->
+    <menuitem id="field_service_tools_menu" 
+              name="工具" 
+              parent="field_service_main_menu" 
+              sequence="80" 
+              groups="field_service_order.group_field_service_technician"/>
+
+    <!-- 批量簽名請求選單 -->
+    <menuitem id="service_order_sign_wizard_menu" 
+              name="批量簽名請求" 
+              parent="field_service_tools_menu" 
+              action="service_order_sign_wizard_action" 
+              sequence="10"/>
+
+
+    <!-- 檢查清單模板視圖已移除，改用 enterprise_product_management 的保養項目管理 -->
+
+</odoo>

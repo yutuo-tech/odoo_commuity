@@ -1,0 +1,308 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ================================== -->
+    <!-- 檢查清單視圖 -->
+    <!-- ================================== -->
+    
+    <!-- 檢查清單表單視圖 -->
+    <record id="field_service_checklist_line_form_view" model="ir.ui.view">
+        <field name="name">檢查清單項目表單</field>
+        <field name="model">field.service.checklist.line</field>
+        <field name="arch" type="xml">
+            <form string="檢查清單項目">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="maintenance_item_id"/>
+                            <field name="name"/>
+                            <field name="is_checked" widget="boolean_toggle"/>
+                        </group>
+                        <group>
+                            <field name="checked_date"/>
+                            <field name="show_on_report" widget="boolean_toggle"/>
+                            <field name="order_id"/>
+                        </group>
+                    </group>
+                    <group string="備註">
+                        <field name="notes" nolabel="1"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- 檢查清單列表視圖 -->
+    <record id="field_service_checklist_line_list_view" model="ir.ui.view">
+        <field name="name">檢查清單項目列表</field>
+        <field name="model">field.service.checklist.line</field>
+        <field name="arch" type="xml">
+            <list string="檢查清單項目" editable="bottom">
+                <field name="maintenance_item_id"/>
+                <field name="name"/>
+                <field name="is_checked" widget="boolean_toggle"/>
+                <field name="checked_date"/>
+                <field name="show_on_report" widget="boolean_toggle"/>
+                <field name="notes"/>
+                <field name="order_id" invisible="1"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- 檢查清單動作 -->
+    <record id="field_service_checklist_line_action" model="ir.actions.act_window">
+        <field name="name">檢查清單項目</field>
+        <field name="res_model">field.service.checklist.line</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- ================================== -->
+    <!-- 費用記錄視圖 -->
+    <!-- ================================== -->
+    
+    <!-- 費用記錄表單視圖 -->
+    <record id="field_service_expense_form_view" model="ir.ui.view">
+        <field name="name">費用記錄表單</field>
+        <field name="model">field.service.expense</field>
+        <field name="arch" type="xml">
+            <form string="費用記錄">
+                <header>
+                    <button name="action_approve" type="object" string="核准" 
+                            class="oe_highlight" invisible="is_approved"/>
+                    <button name="action_reject" type="object" string="拒絕" 
+                            invisible="not is_approved"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="expense_type"/>
+                            <field name="description"/>
+                            <field name="amount"/>
+                            <field name="currency_id"/>
+                        </group>
+                        <group>
+                            <field name="order_id"/>
+                            <field name="approved_by"/>
+                            <field name="approved_date"/>
+                        </group>
+                    </group>
+                    <group string="說明">
+                        <field name="description" nolabel="1"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- 費用記錄列表視圖 -->
+    <record id="field_service_expense_list_view" model="ir.ui.view">
+        <field name="name">費用記錄列表</field>
+        <field name="model">field.service.expense</field>
+        <field name="arch" type="xml">
+            <list string="費用記錄">
+                <field name="description"/>
+                <field name="expense_type"/>
+                <field name="amount"/>
+                <field name="currency_id"/>
+                <field name="order_id"/>
+                <field name="is_approved" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- 費用記錄動作 -->
+    <record id="field_service_expense_action" model="ir.actions.act_window">
+        <field name="name">費用記錄</field>
+        <field name="res_model">field.service.expense</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- ================================== -->
+    <!-- 費用類型視圖 -->
+    <!-- ================================== -->
+    
+    <!-- 費用類型表單視圖 -->
+    <record id="field_service_expense_type_form_view" model="ir.ui.view">
+        <field name="name">費用類型表單</field>
+        <field name="model">field.service.expense.type</field>
+        <field name="arch" type="xml">
+            <form string="費用類型">
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="code"/>
+                        <field name="description"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- 費用類型列表視圖 -->
+    <record id="field_service_expense_type_list_view" model="ir.ui.view">
+        <field name="name">費用類型列表</field>
+        <field name="model">field.service.expense.type</field>
+        <field name="arch" type="xml">
+            <list string="費用類型">
+                <field name="name"/>
+                <field name="code"/>
+                <field name="description"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- 費用類型動作 -->
+    <record id="field_service_expense_type_action" model="ir.actions.act_window">
+        <field name="name">費用類型</field>
+        <field name="res_model">field.service.expense.type</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- ================================== -->
+    <!-- 零件更換視圖 -->
+    <!-- ================================== -->
+    
+    <!-- 零件更換表單視圖 -->
+    <record id="field_service_part_replacement_form_view" model="ir.ui.view">
+        <field name="name">零件更換表單</field>
+        <field name="model">field.service.part.replacement</field>
+        <field name="arch" type="xml">
+            <form string="零件更換">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="material_category_id"/>
+                            <field name="product_id" 
+                                   domain="[('x_material_category_ids', 'in', [material_category_id])]"/>
+                            <field name="quantity"/>
+                        </group>
+                        <group>
+                            <field name="order_id"/>
+                            <field name="sequence"/>
+                        </group>
+                    </group>
+                    <group string="備註">
+                        <field name="notes" nolabel="1"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- 零件更換列表視圖 -->
+    <record id="field_service_part_replacement_list_view" model="ir.ui.view">
+        <field name="name">零件更換列表</field>
+        <field name="model">field.service.part.replacement</field>
+        <field name="arch" type="xml">
+            <list string="零件更換" editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="material_category_id"/>
+                <field name="product_id" 
+                       domain="[('x_material_category_ids', 'in', [material_category_id])]"/>
+                <field name="quantity"/>
+                <field name="notes"/>
+                <field name="order_id"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- 零件更換動作 -->
+    <record id="field_service_part_replacement_action" model="ir.actions.act_window">
+        <field name="name">零件更換</field>
+        <field name="res_model">field.service.part.replacement</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- ================================== -->
+    <!-- 服務標籤視圖 -->
+    <!-- ================================== -->
+    
+    <!-- 服務標籤表單視圖 -->
+    <record id="field_service_tag_form_view" model="ir.ui.view">
+        <field name="name">服務標籤表單</field>
+        <field name="model">field.service.tag</field>
+        <field name="arch" type="xml">
+            <form string="服務標籤">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="color" widget="color_picker"/>
+                        </group>
+                        <group>
+                            <field name="description"/>
+                            <field name="active" widget="boolean_toggle"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- 服務標籤列表視圖 -->
+    <record id="field_service_tag_list_view" model="ir.ui.view">
+        <field name="name">服務標籤列表</field>
+        <field name="model">field.service.tag</field>
+        <field name="arch" type="xml">
+            <list string="服務標籤">
+                <field name="name"/>
+                <field name="color" widget="color"/>
+                <field name="description"/>
+                <field name="active"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- 服務標籤動作 -->
+    <record id="field_service_tag_action" model="ir.actions.act_window">
+        <field name="name">服務標籤</field>
+        <field name="res_model">field.service.tag</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- ================================== -->
+    <!-- 標籤分類視圖 -->
+    <!-- ================================== -->
+    
+    <!-- 標籤分類表單視圖 -->
+    <record id="field_service_tag_category_form_view" model="ir.ui.view">
+        <field name="name">標籤分類表單</field>
+        <field name="model">field.service.tag.category</field>
+        <field name="arch" type="xml">
+            <form string="標籤分類">
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="description"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- 標籤分類列表視圖 -->
+    <record id="field_service_tag_category_list_view" model="ir.ui.view">
+        <field name="name">標籤分類列表</field>
+        <field name="model">field.service.tag.category</field>
+        <field name="arch" type="xml">
+            <list string="標籤分類">
+                <field name="name"/>
+                <field name="description"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- 標籤分類動作 -->
+    <record id="field_service_tag_category_action" model="ir.actions.act_window">
+        <field name="name">標籤分類</field>
+        <field name="res_model">field.service.tag.category</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- ================================== -->
+    <!-- 問題分類視圖 -->
+    <!-- ================================== -->
+    
+    <!-- 注意：問題分類和解決方案視圖已移除，改用 enterprise_product_management 模組的維修問題庫 -->
+
+</odoo>

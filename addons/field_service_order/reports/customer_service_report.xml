@@ -1,0 +1,342 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- 客戶服務處理單報表動作 -->
+    <record id="action_report_customer_service" model="ir.actions.report">
+        <field name="name">客戶服務處理單</field>
+        <field name="model">field.service.order</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">field_service_order.customer_service_report_template</field>
+        <field name="report_file">field_service_order.customer_service_report_template</field>
+        <field name="binding_model_id" ref="model_field_service_order"/>
+        <field name="paperformat_id" ref="base.paperformat_euro"/>
+        <field name="print_report_name">'客戶服務處理單 - %s' % (object.name)</field>
+    </record>
+
+    <!-- 客戶服務處理單 QWeb 模板 - 主模板 -->
+    <template id="customer_service_report_template">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="order">
+                <t t-call="web.external_layout">
+                    <!-- 根據工單類型選擇不同的模板 -->
+                    <t t-if="order.order_type == 'maintenance'">
+                        <t t-call="field_service_order.maintenance_service_report_content"/>
+                    </t>
+                    <t t-elif="order.order_type == 'repair'">
+                        <t t-call="field_service_order.repair_service_report_content"/>
+                    </t>
+                    <t t-else="">
+                        <t t-call="field_service_order.generic_service_report_content"/>
+                    </t>
+                </t>
+            </t>
+        </t>
+    </template>
+
+    <!-- 保養工單的客戶服務處理單內容 -->
+    <template id="maintenance_service_report_content">
+        <div class="page">
+            <!-- 報表標題 -->
+            <div class="text-center mb-4">
+                <h2 class="font-weight-bold">客戶服務處理單</h2>
+                <h4 class="text-muted">醫院工單 - 保養服務</h4>
+            </div>
+            
+            <!-- 基本資訊表格 -->
+            <table class="table table-bordered mt-4">
+                <tr>
+                    <td width="25%" class="font-weight-bold bg-light">Model</td>
+                    <td width="25%"><span t-field="order.product_variant_id.name"/></td>
+                    <td width="25%" class="font-weight-bold bg-light">單位編號</td>
+                    <td width="25%"><span t-field="order.unit_number"/></td>
+                </tr>
+                <tr>
+                    <td class="font-weight-bold bg-light">Serial No</td>
+                    <td><span t-field="order.serial_number"/></td>
+                    <td class="font-weight-bold bg-light">儀器財編</td>
+                    <td><span t-field="order.hospital_asset_number"/></td>
+                </tr>
+                <tr>
+                    <td class="font-weight-bold bg-light">Place</td>
+                    <td colspan="3">
+                        <span t-field="order.partner_id.name"/>
+                        <span t-if="order.department_id"> - <span t-field="order.department_id.name"/></span>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="font-weight-bold bg-light">Date</td>
+                    <td><span t-field="order.date"/></td>
+                    <td class="font-weight-bold bg-light">Name</td>
+                    <td><span t-field="order.technician_id.name"/></td>
+                </tr>
+            </table>
+            
+            <!-- Control Checklist -->
+            <h4 class="mt-4">Control Checklist</h4>
+            <table class="table table-bordered">
+                <thead class="thead-light">
+                    <tr>
+                        <th width="5%">No</th>
+                        <th width="60%">檢查項目</th>
+                        <th width="20%">保養要點</th>
+                        <th width="15%">OK</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- 只顯示 show_in_report = True 的項目 -->
+                    <t t-set="checklist_items" t-value="order.checklist_line_ids.filtered(lambda x: x.show_on_report)"/>
+                    <t t-if="checklist_items">
+                        <tr t-foreach="checklist_items" t-as="item">
+                            <td class="text-center"><span t-esc="item_index + 1"/></td>
+                            <td><span t-field="item.name"/></td>
+                            <td><span t-field="item.key_points"/></td>
+                            <td class="text-center">
+                                <span t-if="item.check_result == 'ok'">✓</span>
+                                <span t-elif="item.check_result == 'ng'">✗</span>
+                                <span t-else="">-</span>
+                            </td>
+                        </tr>
+                    </t>
+                    <t t-else="">
+                        <tr>
+                            <td colspan="4" class="text-center text-muted">
+                                無檢查項目記錄
+                            </td>
+                        </tr>
+                    </t>
+                </tbody>
+            </table>
+            
+            <!-- 簽名區域 -->
+            <div class="row mt-5">
+                <div class="col-6">
+                    <div class="border p-3" style="min-height: 120px;">
+                        <p class="font-weight-bold">客戶簽名：</p>
+                        <t t-if="order.customer_signature_file">
+                            <img t-att-src="'data:image/png;base64,%s' % order.customer_signature_file.decode('utf-8')" 
+                                 style="max-height: 80px; max-width: 200px;"/>
+                            <p class="small text-muted mt-2">
+                                <span t-field="order.signed_by"/> - 
+                                <span t-field="order.signed_date" t-options='{"format": "yyyy/MM/dd"}'/>
+                            </p>
+                        </t>
+                        <t t-else="">
+                            <br/><br/><br/>
+                            <div class="text-center">
+                                <span>簽名：_______________________</span>
+                            </div>
+                        </t>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="border p-3" style="min-height: 120px;">
+                        <p class="font-weight-bold">技術人員：</p>
+                        <p class="mt-3"><span t-field="order.technician_id.name"/></p>
+                        <p class="small text-muted">
+                            服務完成時間：<span t-field="order.end_date" t-options='{"format": "yyyy/MM/dd HH:mm"}'/>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <!-- 維修單的客戶服務處理單內容 -->
+    <template id="repair_service_report_content">
+        <div class="page">
+            <!-- 報表標題 -->
+            <div class="text-center mb-4">
+                <h2 class="font-weight-bold">客戶服務處理單</h2>
+                <h4 class="text-muted">醫院工單 - 維修服務</h4>
+            </div>
+            
+            <!-- 基本資訊表格 -->
+            <table class="table table-bordered mt-4">
+                <tr>
+                    <td width="20%" class="font-weight-bold bg-light">日期</td>
+                    <td width="30%"><span t-field="order.date"/></td>
+                    <td width="20%" class="font-weight-bold bg-light">時間</td>
+                    <td width="30%">
+                        <span t-if="order.start_date" t-field="order.start_date" t-options='{"format": "HH:mm"}'/>
+                        <span t-if="order.start_date and order.end_date"> - </span>
+                        <span t-if="order.end_date" t-field="order.end_date" t-options='{"format": "HH:mm"}'/>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="font-weight-bold bg-light">客戶名稱</td>
+                    <td><span t-field="order.partner_id.name"/></td>
+                    <td class="font-weight-bold bg-light">使用單位</td>
+                    <td><span t-field="order.department_id.name"/></td>
+                </tr>
+                <tr>
+                    <td class="font-weight-bold bg-light">服務類型</td>
+                    <td colspan="3">維修服務</td>
+                </tr>
+                <tr t-if="order.serial_number or order.product_variant_id">
+                    <td class="font-weight-bold bg-light">設備資訊</td>
+                    <td colspan="3">
+                        <span t-if="order.product_variant_id" t-field="order.product_variant_id.name"/>
+                        <span t-if="order.serial_number"> (序號: <span t-field="order.serial_number"/>)</span>
+                    </td>
+                </tr>
+            </table>
+            
+            <!-- 服務內容區域 -->
+            <div class="mt-4">
+                <h5 class="border-bottom pb-2">事項描述</h5>
+                <div class="border p-3 bg-light" style="min-height: 80px;">
+                    <span t-field="order.problem_description"/>
+                    <span t-if="not order.problem_description" class="text-muted">無問題描述記錄</span>
+                </div>
+            </div>
+            
+            <div class="mt-3">
+                <h5 class="border-bottom pb-2">處理事項</h5>
+                <div class="border p-3 bg-light" style="min-height: 80px;">
+                    <span t-field="order.solution_description"/>
+                    <span t-if="not order.solution_description" class="text-muted">無處理事項記錄</span>
+                </div>
+            </div>
+            
+            <div class="mt-3">
+                <h5 class="border-bottom pb-2">客戶建議事項</h5>
+                <div class="border p-3" style="min-height: 60px;">
+                    <span t-field="order.customer_suggestion"/>
+                    <span t-if="not order.customer_suggestion" class="text-muted">無客戶建議</span>
+                </div>
+            </div>
+            
+            <!-- 零件更換記錄（如有） -->
+            <div t-if="order.part_replacement_ids" class="mt-3">
+                <h5 class="border-bottom pb-2">零件更換記錄</h5>
+                <table class="table table-sm table-bordered">
+                    <thead class="thead-light">
+                        <tr>
+                            <th>零件名稱</th>
+                            <th width="15%">數量</th>
+                            <th width="25%">備註</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr t-foreach="order.part_replacement_ids" t-as="part">
+                            <td><span t-field="part.product_id.name"/></td>
+                            <td class="text-center"><span t-field="part.quantity"/></td>
+                            <td><span t-field="part.notes"/></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- 處理人員與簽名 -->
+            <div class="row mt-5">
+                <div class="col-6">
+                    <div class="border p-3" style="min-height: 120px;">
+                        <p class="font-weight-bold">處理人員：</p>
+                        <p class="mt-3"><span t-field="order.technician_id.name"/></p>
+                        <p class="small text-muted">
+                            完成時間：<span t-if="order.end_date" t-field="order.end_date" t-options='{"format": "yyyy/MM/dd HH:mm"}'/>
+                        </p>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="border p-3" style="min-height: 120px;">
+                        <p class="font-weight-bold">客戶簽名：</p>
+                        <t t-if="order.customer_signature_file">
+                            <img t-att-src="'data:image/png;base64,%s' % order.customer_signature_file.decode('utf-8')" 
+                                 style="max-height: 80px; max-width: 200px;"/>
+                            <p class="small text-muted mt-2">
+                                <span t-field="order.signed_by"/> - 
+                                <span t-field="order.signed_date" t-options='{"format": "yyyy/MM/dd"}'/>
+                            </p>
+                        </t>
+                        <t t-else="">
+                            <br/><br/><br/>
+                            <div class="text-center">
+                                <span>簽名：_______________________</span>
+                            </div>
+                        </t>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <!-- 通用工單的客戶服務處理單內容（工作日誌等） -->
+    <template id="generic_service_report_content">
+        <div class="page">
+            <!-- 報表標題 -->
+            <div class="text-center mb-4">
+                <h2 class="font-weight-bold">客戶服務處理單</h2>
+                <h4 class="text-muted">Customer Service Report</h4>
+            </div>
+            
+            <!-- 基本資訊 -->
+            <table class="table table-bordered">
+                <tr>
+                    <td width="20%" class="font-weight-bold bg-light">工單編號</td>
+                    <td width="30%"><span t-field="order.name"/></td>
+                    <td width="20%" class="font-weight-bold bg-light">工單類型</td>
+                    <td width="30%">
+                        <span t-if="order.order_type == 'work_log'">工作日誌</span>
+                        <span t-else=""><span t-field="order.order_type"/></span>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="font-weight-bold bg-light">服務日期</td>
+                    <td><span t-field="order.date"/></td>
+                    <td class="font-weight-bold bg-light">技術人員</td>
+                    <td><span t-field="order.technician_id.name"/></td>
+                </tr>
+                <tr t-if="order.partner_id">
+                    <td class="font-weight-bold bg-light">客戶</td>
+                    <td><span t-field="order.partner_id.name"/></td>
+                    <td class="font-weight-bold bg-light">聯絡人</td>
+                    <td><span t-field="order.contact_id.name"/></td>
+                </tr>
+            </table>
+            
+            <!-- 工作內容 -->
+            <div class="mt-4">
+                <h5>工作內容</h5>
+                <div class="border p-3" style="min-height: 100px;">
+                    <span t-field="order.record_content" t-if="order.record_content"/>
+                    <span t-field="order.description" t-elif="order.description"/>
+                    <span class="text-muted" t-else="">無工作內容記錄</span>
+                </div>
+            </div>
+            
+            <!-- 備註 -->
+            <div class="mt-3" t-if="order.notes">
+                <h5>備註</h5>
+                <div class="border p-3">
+                    <span t-field="order.notes"/>
+                </div>
+            </div>
+            
+            <!-- 簽名區域 -->
+            <div class="row mt-5">
+                <div class="col-6">
+                    <div class="border p-3" style="min-height: 100px;">
+                        <p class="font-weight-bold">服務人員簽名：</p>
+                        <p class="mt-3"><span t-field="order.technician_id.name"/></p>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="border p-3" style="min-height: 100px;">
+                        <p class="font-weight-bold">客戶簽名：</p>
+                        <t t-if="order.customer_signature_file">
+                            <img t-att-src="'data:image/png;base64,%s' % order.customer_signature_file.decode('utf-8')" 
+                                 style="max-height: 60px; max-width: 150px;"/>
+                            <br/><span class="small text-muted"><span t-field="order.signed_by"/></span>
+                        </t>
+                        <t t-else="">
+                            <br/><br/>
+                            <span>簽名：____________________</span>
+                        </t>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+</odoo>

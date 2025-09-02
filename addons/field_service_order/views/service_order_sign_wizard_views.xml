@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- 服務工單簽名精靈表單視圖 -->
+    <record id="service_order_sign_wizard_form_view" model="ir.ui.view">
+        <field name="name">服務工單簽名精靈</field>
+        <field name="model">service.order.sign.wizard</field>
+        <field name="arch" type="xml">
+            <form string="批量簽名請求">
+                <header>
+                    <button name="action_send_signature_request" type="object" 
+                            string="發送簽名請求" class="btn-primary" 
+                            invisible="state != 'draft'"/>
+                    <button name="action_reset" type="object" 
+                            string="重設" class="btn-secondary" 
+                            invisible="state == 'draft'"/>
+                    <field name="state" widget="statusbar" 
+                           statusbar_visible="draft,processing,done"/>
+                </header>
+                
+                <sheet>
+                    <!-- 工單選擇區域 -->
+                    <group string="工單選擇" invisible="state != 'draft'">
+                        <field name="order_ids" widget="many2many_tags" 
+                               context="{'tree_view_ref': 'field_service_order.field_service_order_list_view'}"
+                               domain="[('state', '=', 'done')]"/>
+                        <field name="order_count" readonly="1"/>
+                        <button name="action_preview_orders" type="object" 
+                                string="預覽選擇的工單" class="btn-link" 
+                                invisible="not order_ids"/>
+                    </group>
+                    
+                    <!-- 簽名設定區域 -->
+                    <group string="簽名設定" invisible="state != 'draft'">
+                        <group>
+                            <field name="template_id"/>
+                            <field name="subject"/>
+                            <field name="send_immediately" widget="boolean_toggle"/>
+                        </group>
+                        <group>
+                            <field name="include_pdf" widget="boolean_toggle"/>
+                            <field name="reminder_days"/>
+                        </group>
+                    </group>
+                    
+                    <!-- 郵件內容 -->
+                    <group string="郵件內容" invisible="state != 'draft'">
+                        <field name="message" nolabel="1" widget="html"/>
+                    </group>
+                    
+                    <!-- 處理結果區域 -->
+                    <div invisible="state == 'draft'">
+                        <group string="處理結果" invisible="state in ['draft', 'processing']">
+                            <group>
+                                <field name="success_count" readonly="1"/>
+                                <field name="failed_count" readonly="1"/>
+                            </group>
+                        </group>
+                        
+                        <!-- 錯誤訊息 -->
+                        <group string="錯誤訊息" invisible="not error_message or state != 'done'">
+                            <field name="error_message" nolabel="1" readonly="1" widget="text"/>
+                        </group>
+                        
+                        <!-- 處理中訊息 -->
+                        <div class="alert alert-info" role="alert" invisible="state != 'processing'">
+                            <h4>處理中...</h4>
+                            <p>正在為選擇的工單發送簽名請求，請稍候。</p>
+                        </div>
+                        
+                        <!-- 完成訊息 -->
+                        <div class="alert alert-success" role="alert" invisible="state != 'done' or failed_count > 0">
+                            <h4>處理完成！</h4>
+                            <p>已成功為 <strong><field name="success_count" readonly="1"/></strong> 個工單發送簽名請求。</p>
+                        </div>
+                        
+                        <!-- 部分失敗訊息 -->
+                        <div class="alert alert-warning" role="alert" invisible="state != 'done' or failed_count == 0">
+                            <h4>處理完成，但有部分失敗</h4>
+                            <p>
+                                成功：<strong><field name="success_count" readonly="1"/></strong> 個工單<br/>
+                                失敗：<strong><field name="failed_count" readonly="1"/></strong> 個工單
+                            </p>
+                            <p>請檢視錯誤訊息了解失敗原因。</p>
+                        </div>
+                    </div>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- 精靈動作 -->
+    <record id="service_order_sign_wizard_action" model="ir.actions.act_window">
+        <field name="name">批量簽名請求</field>
+        <field name="res_model">service.order.sign.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="context">{'active_model': 'field.service.order'}</field>
+    </record>
+
+    <!-- 選單項目：從工單列表中批量發送簽名請求 -->
+    <record id="field_service_order_list_send_signature_action" model="ir.actions.server">
+        <field name="name">批量發送簽名請求</field>
+        <field name="model_id" ref="model_field_service_order"/>
+        <field name="binding_model_id" ref="model_field_service_order"/>
+        <field name="binding_view_types">list</field>
+        <field name="state">code</field>
+        <field name="code">
+# 檢查選擇的工單是否都是已完成狀態
+invalid_orders = records.filtered(lambda r: r.state != 'done')
+if invalid_orders:
+    raise UserError('只有已完成狀態的工單才能發送簽名請求！\n無效工單：%s' % ', '.join(invalid_orders.mapped('name')))
+
+# 打開精靈
+action = env.ref('field_service_order.service_order_sign_wizard_action').read()[0]
+action['context'] = {
+    'default_order_ids': [(6, 0, records.ids)],
+    'active_ids': records.ids,
+    'active_model': 'field.service.order',
+}
+action = action
+        </field>
+    </record>
+
+</odoo>
