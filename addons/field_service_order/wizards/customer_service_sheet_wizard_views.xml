@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- 客戶處理單生成精靈表單 -->
+    <record id="customer_service_sheet_wizard_form" model="ir.ui.view">
+        <field name="name">客戶處理單生成精靈</field>
+        <field name="model">customer.service.sheet.wizard</field>
+        <field name="arch" type="xml">
+            <form string="生成客戶處理單">
+                <div class="alert alert-info" role="alert">
+                    <strong>預覽即將生成的客戶處理單內容</strong><br/>
+                    請確認以下資訊無誤後點擊「生成客戶處理單」按鈕。
+                </div>
+                
+                <sheet>
+                    <!-- 基本資訊 -->
+                    <group>
+                        <group name="basic_info" string="基本資訊">
+                            <field name="service_order_id" readonly="1"/>
+                            <field name="order_type" widget="badge" readonly="1"
+                                   decoration-info="order_type == 'maintenance'" 
+                                   decoration-warning="order_type == 'repair'"
+                                   decoration-success="order_type == 'work_log'"/>
+                            <field name="service_date" readonly="1"/>
+                            <field name="customer_name" readonly="1"/>
+                            <field name="department_name" readonly="1"/>
+                            <field name="technician_name" readonly="1"/>
+                        </group>
+                        
+                        <group name="settings" string="生成設定">
+                            <field name="include_photos_in_pdf"/>
+                        </group>
+                    </group>
+                    
+                    <!-- 根據工單類型顯示不同預覽內容 -->
+                    <notebook>
+                        <!-- 保養工單預覽 -->
+                        <page string="保養資訊" name="maintenance_preview" 
+                              invisible="order_type != 'maintenance'">
+                            <group>
+                                <group name="equipment_info" string="設備資訊">
+                                    <field name="equipment_model" readonly="1"/>
+                                    <field name="unit_number" readonly="1"/>
+                                    <field name="serial_number" readonly="1"/>
+                                    <field name="asset_number" readonly="1"/>
+                                </group>
+                            </group>
+                            
+                            <group string="檢查清單預覽">
+                                <field name="checklist_preview" nolabel="1" readonly="1" 
+                                       widget="html"/>
+                            </group>
+                        </page>
+                        
+                        <!-- 維修單/工作日誌預覽 -->
+                        <page string="服務內容" name="service_preview" 
+                              invisible="order_type == 'maintenance'">
+                            <group>
+                                <field name="work_nature" readonly="1" 
+                                       invisible="order_type != 'work_log'" string="工作性質"/>
+                            </group>
+                            
+                            <group string="服務詳情預覽">
+                                <separator string="問題描述/事項描述"/>
+                                <field name="problem_description" readonly="1" 
+                                       widget="text" nolabel="1"/>
+                                <separator string="處理事項"/>
+                                <field name="solution_description" readonly="1" 
+                                       widget="text" nolabel="1"/>
+                                
+                                <!-- 維修單專用：零件更換和維修問題 -->
+                                <group name="repair_specific" 
+                                       invisible="order_type != 'repair'">
+                                    <separator string="零件更換記錄"/>
+                                    <field name="part_replacement_preview" readonly="1" 
+                                           widget="html" nolabel="1"/>
+                                    <separator string="維修問題"/>
+                                    <field name="repair_problems_preview" readonly="1" 
+                                           widget="html" nolabel="1"/>
+                                </group>
+                            </group>
+                        </page>
+                        
+                        <!-- 客戶建議事項 -->
+                        <page string="客戶建議事項" name="customer_suggestion">
+                            <group>
+                                <field name="customer_suggestion" widget="text" nolabel="1" 
+                                       placeholder="可在此預先填寫客戶建議事項，生成後仍可繼續編輯..."/>
+                            </group>
+                            
+                            <div class="alert alert-warning" role="alert">
+                                <strong>注意：</strong>客戶建議事項是唯一可以在客戶處理單中編輯的欄位，
+                                其他資訊都會自動從工單引入且為唯讀狀態。
+                            </div>
+                        </page>
+                    </notebook>
+                </sheet>
+                
+                <footer>
+                    <button name="action_generate_customer_service_sheet" 
+                            type="object" string="生成客戶處理單" 
+                            class="btn-primary"/>
+                    <button name="action_cancel" type="object" 
+                            string="取消" class="btn-secondary"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+    
+    <!-- 客戶處理單生成精靈動作 -->
+    <record id="action_customer_service_sheet_wizard" model="ir.actions.act_window">
+        <field name="name">生成客戶處理單</field>
+        <field name="res_model">customer.service.sheet.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="binding_model_id" ref="model_field_service_order"/>
+    </record>
+
+    <!-- 簽名上傳精靈表單 -->
+    <record id="customer_service_sheet_signature_wizard_form" model="ir.ui.view">
+        <field name="name">客戶處理單簽名精靈</field>
+        <field name="model">customer.service.sheet.signature.wizard</field>
+        <field name="arch" type="xml">
+            <form string="上傳客戶簽名">
+                <div class="alert alert-info" role="alert">
+                    <strong>上傳客戶簽名檔案</strong><br/>
+                    請上傳客戶的簽名圖片檔案並填寫相關資訊。
+                </div>
+                
+                <sheet>
+                    <group>
+                        <field name="sheet_id" invisible="1"/>
+                        
+                        <group name="signature_info" string="簽名資訊">
+                            <field name="signed_by" placeholder="請輸入簽名人姓名"/>
+                            <field name="signed_date"/>
+                        </group>
+                        
+                        <group name="signature_file_info" string="簽名檔案">
+                            <field name="signature_file" filename="signature_filename"/>
+                            <field name="signature_filename"/>
+                        </group>
+                    </group>
+                    
+                    <div class="alert alert-warning" role="alert">
+                        <strong>支援的檔案格式：</strong>JPG, PNG, PDF 等圖片或文件檔案<br/>
+                        <strong>檔案大小限制：</strong>建議不超過 10MB
+                    </div>
+                </sheet>
+                
+                <footer>
+                    <button name="action_upload_signature" 
+                            type="object" string="上傳簽名" 
+                            class="btn-primary"/>
+                    <button name="action_cancel" type="object" 
+                            string="取消" class="btn-secondary"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+</odoo>

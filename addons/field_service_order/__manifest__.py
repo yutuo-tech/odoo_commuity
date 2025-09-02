@@ -13,7 +13,7 @@
 - 保養工單管理
 - 維修單管理  
 - 工作日誌管理
-- 客戶服務處理單生成
+- 客戶處理單管理（從工單自動生成）
 - 電子簽名整合
 - PDF 報表匯出
 
@@ -52,15 +52,21 @@
         # Views
         'views/field_service_order_views.xml',
         'views/field_service_auxiliary_views.xml',
+        'views/customer_service_sheet_views.xml',
         'views/service_order_sign_wizard_views.xml',
         'views/field_service_menu.xml',
         
         # Wizards
         'wizards/signature_upload_wizard_views.xml',
         'wizards/signature_view_wizard_views.xml',
+        'wizards/customer_service_sheet_wizard_views.xml',
         
         # Reports
         'reports/customer_service_report.xml',
+        'reports/customer_service_sheet_report.xml',
+        
+        # Templates
+        'templates/customer_service_sheet_print.xml',
     ],
     'demo': [
         # 'demo/field_service_demo.xml',

@@ -41,6 +41,13 @@
               action="work_log_action" 
               sequence="40"/>
 
+    <!-- 客戶處理單選單 -->
+    <menuitem id="customer_service_sheet_menu" 
+              name="客戶處理單" 
+              parent="field_service_orders_menu" 
+              action="action_customer_service_sheet" 
+              sequence="50"/>
+
     <!-- 知識庫選單群組 -->
     <menuitem id="field_service_knowledge_menu" 
               name="知識庫" 

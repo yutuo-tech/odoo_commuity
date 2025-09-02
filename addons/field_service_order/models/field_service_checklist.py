@@ -36,12 +36,9 @@ class FieldServiceChecklistLine(models.Model):
         help='關聯到企業產品模組的保養項目'
     )
     
-    # 基本資訊欄位 (從保養項目關聯取得)
+    # 基本資訊欄位 (從保養項目關聯取得，但允許直接設置)
     name = fields.Char(
         '項目名稱',
-        related='maintenance_item_id.name',
-        store=True,
-        readonly=True,
         help='保養項目的名稱'
     )
     
@@ -120,6 +117,12 @@ class FieldServiceChecklistLine(models.Model):
             record.display_name = f"{status} {record.name or ''}"
     
     # onchange 方法
+    @api.onchange('maintenance_item_id')
+    def _onchange_maintenance_item_id(self):
+        """當選擇保養項目時，自動帶入名稱"""
+        if self.maintenance_item_id:
+            self.name = self.maintenance_item_id.name
+    
     @api.onchange('is_checked')
     def _onchange_is_checked(self):
         """勾選狀態改變時更新完成時間和人員"""

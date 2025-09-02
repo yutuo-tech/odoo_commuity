@@ -201,8 +201,7 @@
             <div class="mt-3">
                 <h5 class="border-bottom pb-2">客戶建議事項</h5>
                 <div class="border p-3" style="min-height: 60px;">
-                    <span t-field="order.customer_suggestion"/>
-                    <span t-if="not order.customer_suggestion" class="text-muted">無客戶建議</span>
+                    <span class="text-muted">客戶建議事項請參考客戶處理單</span>
                 </div>
             </div>
             

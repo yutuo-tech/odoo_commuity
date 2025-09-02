@@ -7,3 +7,4 @@ from . import field_service_expense
 from . import field_service_part
 from . import field_service_tag
 from . import field_service_problem
+from . import customer_service_sheet

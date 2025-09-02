@@ -413,12 +413,6 @@ class FieldServiceOrder(models.Model):
         help='手寫輸入，字數希望可達1000字'
     )
     
-    # 客戶建議事項（維修單的客戶服務處理單需要）
-    customer_suggestion = fields.Text(
-        '客戶建議事項',
-        help='客戶對設備使用或維護的建議事項',
-        tracking=True
-    )
     
     # ===========================================
     # 工作日誌專用欄位
@@ -565,6 +559,24 @@ class FieldServiceOrder(models.Model):
         help='關聯的電子簽名請求'
     )
     
+    # ===========================================
+    # 客戶處理單關聯欄位
+    # ===========================================
+    
+    customer_service_sheet_id = fields.One2many(
+        'customer.service.sheet',
+        'service_order_id',
+        string='客戶處理單',
+        help='此工單對應的客戶處理單'
+    )
+    
+    has_customer_service_sheet = fields.Boolean(
+        '已有客戶處理單',
+        compute='_compute_has_customer_service_sheet',
+        store=True,
+        help='此工單是否已建立客戶處理單'
+    )
+    
     customer_signature_date = fields.Datetime(
         '客戶簽名日期',
         help='客戶完成簽名的日期時間'
@@ -697,6 +709,18 @@ class FieldServiceOrder(models.Model):
                     record.actual_duration = 0.0
             else:
                 record.actual_duration = 0.0
+    
+    @api.depends('customer_service_sheet_id')
+    def _compute_has_customer_service_sheet(self):
+        """
+        計算是否已有客戶處理單
+        
+        檢查此工單是否已經建立客戶處理單（包含已封存的記錄）
+        """
+        for record in self:
+            # 搜尋所有客戶處理單（包含非活躍/已封存的記錄）
+            sheets = record.with_context(active_test=False).customer_service_sheet_id
+            record.has_customer_service_sheet = bool(sheets)
     
     # ===========================================
     # 預設值方法
@@ -1196,6 +1220,66 @@ class FieldServiceOrder(models.Model):
             'res_id': new_order.id,
             'view_mode': 'form',
             'context': {'default_order_type': 'work_log'}
+        }
+    
+    def action_create_customer_service_sheet(self):
+        """
+        建立客戶處理單
+        
+        開啟客戶處理單生成精靈
+        """
+        self.ensure_one()
+        
+        # 移除狀態限制，讓所有狀態的工單都能生成客戶處理單
+        
+        # 檢查是否已有客戶處理單
+        if self.customer_service_sheet_id:
+            # 如果已有，直接開啟
+            return {
+                'type': 'ir.actions.act_window',
+                'name': _('客戶處理單'),
+                'res_model': 'customer.service.sheet',
+                'res_id': self.customer_service_sheet_id[0].id,
+                'view_mode': 'form',
+                'target': 'current',
+            }
+        
+        # 開啟生成精靈進行預覽
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('生成客戶處理單'),
+            'res_model': 'customer.service.sheet.wizard',
+            'view_mode': 'form',
+            'target': 'new',
+            'context': {
+                'active_id': self.id,
+                'active_model': self._name,
+                'default_service_order_id': self.id,
+            }
+        }
+    
+    def action_view_customer_service_sheet(self):
+        """
+        查看客戶處理單
+        
+        查看此工單對應的客戶處理單（包含已封存的記錄）
+        """
+        self.ensure_one()
+        
+        # 搜尋所有客戶處理單（包含非活躍/已封存的記錄）
+        sheets = self.with_context(active_test=False).customer_service_sheet_id
+        
+        if not sheets:
+            raise UserError(_('此工單尚未建立客戶處理單！'))
+        
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('客戶處理單'),
+            'res_model': 'customer.service.sheet',
+            'res_id': sheets[0].id,
+            'view_mode': 'form',
+            'target': 'current',
+            'context': {'active_test': False}  # 確保能顯示已封存的記錄
         }
     
     def action_load_maintenance_checklist(self):

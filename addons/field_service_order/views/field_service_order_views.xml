@@ -22,9 +22,13 @@
                     <button name="action_cancel" type="object" string="取消" 
                             invisible="state in ['cancelled', 'confirmed']"/>
                     <button name="action_reset_draft" type="object" string="重設為草稿" 
-                            invisible="state not in ['cancelled']"/>
-                    <button name="action_request_signature" type="object" string="發送簽名請求" 
-                            invisible="state != 'done' or signature_request_id"/>
+                            invisible="state not in ['cancelled']"/>                    
+                    
+                    <!-- 客戶處理單按鈕 -->
+                    <button name="action_create_customer_service_sheet" type="object" 
+                            string="客戶處理單" class="oe_highlight"
+                            invisible="has_customer_service_sheet"
+                            help="建立客戶處理單"/>
                     
                     <!-- 狀態列 -->
                     <field name="state" widget="statusbar" 
@@ -39,24 +43,11 @@
                 </div>
                 
                 <!-- 智能按鈕區域 -->
-                <div class="oe_button_box" name="button_box">
-                    <button name="action_view_expenses" type="object" 
-                            class="oe_stat_button" icon="fa-money">
-                        <div class="o_field_widget o_stat_info">
-                            <span class="o_stat_value"><field name="expense_count"/></span>
-                            <span class="o_stat_text">費用</span>
-                        </div>
-                    </button>
-                    <button name="action_view_part_replacements" type="object" 
-                            class="oe_stat_button" icon="fa-cogs">
-                        <div class="o_field_widget o_stat_info">
-                            <span class="o_stat_value"><field name="part_replacement_count"/></span>
-                            <span class="o_stat_text">零件</span>
-                        </div>
-                    </button>
-                    <button name="action_view_signature" type="object" 
-                            class="oe_stat_button" icon="fa-file-text-o">
-                        <span>簽名</span>
+                <div class="oe_button_box" name="button_box">                    
+                    <button name="action_view_customer_service_sheet" type="object" 
+                            class="oe_stat_button" icon="fa-file-o"
+                            invisible="not has_customer_service_sheet">
+                        <span>客戶處理單</span>
                     </button>
                 </div>
                 
@@ -74,6 +65,7 @@
                                    domain="[('company_id', '=', partner_id)]"
                                    invisible="not partner_id"/>
                             <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="has_customer_service_sheet" invisible="1"/>
                         </group>
                         
                         <group name="dates" string="時間資訊">
@@ -139,10 +131,6 @@
                         </group>
                     </group>
                     
-                    <!-- 客戶建議 -->
-                    <group string="客戶建議" invisible="order_type not in ['maintenance', 'repair']">
-                        <field name="customer_suggestion" nolabel="1" placeholder="客戶建議事項..."/>
-                    </group>
                     
                     <!-- 工作日誌專用欄位 -->
                     <group string="工作性質" invisible="order_type != 'work_log'">
@@ -513,16 +501,10 @@
                                     <div>
                                         <a name="action_view_part_replacements" type="object">零件更換</a>
                                     </div>
-                                    <div>
-                                        <a name="action_view_signature" type="object">簽名</a>
-                                    </div>
                                 </div>
                                 
                                 <div class="col-6 o_kanban_card_manage_section o_kanban_manage_new">
-                                    <h5>操作</h5>
-                                    <div t-if="record.state.raw_value == 'done' and !record.signature_request_id.raw_value">
-                                        <a name="action_send_signature_request" type="object">發送簽名請求</a>
-                                    </div>
+                                    <h5>操作</h5>                                   
                                     <div t-if="record.state.raw_value in ['done', 'confirmed']">
                                         <a name="action_generate_customer_report" type="object">生成客戶報表</a>
                                     </div>
@@ -559,8 +541,7 @@
                 建立您的第一個服務工單
             </p>
             <p>
-                管理保養工單、維修工單和工作日誌。追蹤設備維護狀況，記錄費用和零件更換，
-                並透過線上簽名系統獲得客戶確認。
+                管理保養工單、維修工單和工作日誌。追蹤設備維護狀況，記錄費用和零件更換。
             </p>
         </field>
     </record>

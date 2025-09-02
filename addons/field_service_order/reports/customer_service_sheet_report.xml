@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- 客戶處理單 HTML 報表動作 -->
+    <record id="action_report_customer_service_sheet" model="ir.actions.report">
+        <field name="name">客戶處理單報表</field>
+        <field name="model">customer.service.sheet</field>
+        <field name="report_type">qweb-html</field>
+        <field name="report_name">field_service_order.customer_service_sheet_document</field>
+        <field name="report_file">field_service_order.customer_service_sheet_document</field>
+        <field name="print_report_name">'%s_客戶處理單' % (object.display_name)</field>
+        <field name="binding_model_id" ref="model_customer_service_sheet"/>
+        <field name="binding_type">report</field>
+    </record>
+    
+    <!-- 客戶處理單 HTML 報表模板 -->
+    <template id="customer_service_sheet_document">
+        <t t-call="web.html_container">
+            <t t-call="web.basic_layout">
+                <t t-foreach="docs" t-as="o">
+                    <div class="page">
+                        <!-- 內嵌樣式 -->
+                        <style>
+                            .custom-table { border-collapse: collapse; width: 100%; margin-bottom: 20px; }
+                            .custom-table th, .custom-table td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+                            .custom-table th { background-color: #f5f5f5; }
+                            .text-center { text-align: center; }
+                            .text-right { text-align: right; }
+                            h2, h4, h5 { margin-bottom: 10px; }
+                            .content-box { border: 1px solid #ccc; padding: 10px; margin-top: 5px; }
+                        </style>
+                        
+                        <!-- 報表標題 -->
+                        <div class="text-center" style="margin-bottom: 20px;">
+                            <h2>客戶服務處理單</h2>
+                            <h4 t-if="o.order_type == 'maintenance'">保養服務記錄</h4>
+                            <h4 t-elif="o.order_type == 'repair'">維修服務記錄</h4>
+                            <h4 t-else="">工作日誌記錄</h4>
+                        </div>
+                        
+                        <!-- 基本資訊表格 -->
+                        <table class="custom-table">
+                            <tr>
+                                <td class="text-right" style="width: 15%; font-weight: bold;">服務日期:</td>
+                                <td style="width: 35%;"><t t-out="o.service_date or ''"/></td>
+                                <td class="text-right" style="width: 15%; font-weight: bold;">服務時間:</td>
+                                <td style="width: 35%;"><t t-out="o.service_time or ''"/></td>
+                            </tr>
+                            <tr>
+                                <td class="text-right" style="font-weight: bold;">客戶名稱:</td>
+                                <td><t t-out="o.customer_name or ''"/></td>
+                                <td class="text-right" style="font-weight: bold;">使用單位:</td>
+                                <td><t t-out="o.department_name or ''"/></td>
+                            </tr>
+                            <tr>
+                                <td class="text-right" style="font-weight: bold;">服務類型:</td>
+                                <td><t t-out="o.service_type_display or ''"/></td>
+                                <td class="text-right" style="font-weight: bold;">處理人員:</td>
+                                <td><t t-out="o.technician_name or ''"/></td>
+                            </tr>
+                        </table>
+                        
+                        <!-- 保養工單專用區塊 -->
+                        <div t-if="o.order_type == 'maintenance'">
+                            <h5 style="margin-bottom: 15px;">設備資訊</h5>
+                            <table class="custom-table">
+                                <tr>
+                                    <td class="text-right" style="width: 15%; font-weight: bold;">Model:</td>
+                                    <td style="width: 35%;"><t t-out="o.equipment_model or ''"/></td>
+                                    <td class="text-right" style="width: 15%; font-weight: bold;">Serial No:</td>
+                                    <td style="width: 35%;"><t t-out="o.serial_number or ''"/></td>
+                                </tr>
+                                <tr>
+                                    <td class="text-right" style="font-weight: bold;">儀器財編:</td>
+                                    <td><t t-out="o.asset_number or ''"/></td>
+                                    <td class="text-right" style="font-weight: bold;">單位編號:</td>
+                                    <td><t t-out="o.unit_number or ''"/></td>
+                                </tr>
+                            </table>
+                        </div>
+                        
+                        <!-- 保養檢查清單 -->
+                        <div t-if="o.order_type == 'maintenance' and o.maintenance_checklist">
+                            <h5 style="margin-bottom: 15px;">Control Checklist</h5>
+                            <div style="margin-bottom: 20px;">
+                                <t t-out="o.maintenance_checklist"/>
+                            </div>
+                        </div>
+                        
+                        <!-- 維修單/工作日誌內容 -->
+                        <div t-if="o.order_type != 'maintenance'">
+                            <h5 style="margin-bottom: 15px;">服務內容</h5>
+                            
+                            <!-- 工作性質（工作日誌） -->
+                            <div t-if="o.order_type == 'work_log' and o.work_nature" style="margin-bottom: 15px;">
+                                <strong>工作性質:</strong> <t t-out="o.work_nature or ''"/>
+                            </div>
+                            
+                            <!-- 事項描述 -->
+                            <div t-if="o.problem_description" style="margin-bottom: 15px;">
+                                <strong>事項描述:</strong>
+                                <div class="content-box">
+                                    <t t-out="o.problem_description or ''"/>
+                                </div>
+                            </div>
+                            
+                            <!-- 處理事項 -->
+                            <div t-if="o.solution_description" style="margin-bottom: 15px;">
+                                <strong>處理事項:</strong>
+                                <div class="content-box">
+                                    <t t-out="o.solution_description or ''"/>
+                                </div>
+                            </div>
+                            
+                            <!-- 維修單專用：零件更換記錄 -->
+                            <div t-if="o.order_type == 'repair'" style="margin-bottom: 15px;">
+                                <strong>零件更換記錄:</strong>
+                                <div class="content-box">
+                                    <t t-out="o.part_replacement_html"/>
+                                </div>
+                            </div>
+                            
+                            <!-- 維修單專用：維修問題 -->
+                            <div t-if="o.order_type == 'repair'" style="margin-bottom: 15px;">
+                                <strong>維修問題:</strong>
+                                <div class="content-box">
+                                    <t t-out="o.repair_problems_html"/>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 客戶建議事項 -->
+                        <div>
+                            <h5 style="margin-bottom: 15px;">客戶建議事項</h5>
+                            <div class="content-box" style="min-height: 80px; margin-bottom: 20px;">
+                                <t t-out="o.customer_suggestion or ''"/>
+                            </div>
+                        </div>
+                        
+                        <!-- 簽名區域 -->
+                        <table style="width: 100%; margin-top: 20px; border-collapse: collapse;">
+                            <tr>
+                                <td style="width: 50%; padding-right: 10px; vertical-align: top; border: none;">
+                                    <h5 style="margin-bottom: 15px;">客戶簽名</h5>
+                                    <div class="content-box" style="height: 120px; text-align: center;">
+                                        <!-- 顯示簽名圖片 -->
+                                        <div t-if="o.customer_signature">
+                                            <img t-att-src="image_data_uri(o.customer_signature)" 
+                                                 style="max-height: 100px; max-width: 100%;"/>
+                                        </div>
+                                        <div t-elif="o.x_customer_signature_file">
+                                            <img t-att-src="image_data_uri(o.x_customer_signature_file)" 
+                                                 style="max-height: 100px; max-width: 100%;"/>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- 簽名資訊 -->
+                                    <div style="margin-top: 10px;">
+                                        <div t-if="o.signed_by">
+                                            <strong>簽名人:</strong> <t t-out="o.signed_by or ''"/>
+                                        </div>
+                                        <div t-if="o.signed_date">
+                                            <strong>簽名時間:</strong> <t t-out="o.signed_date or ''"/>
+                                        </div>
+                                    </div>
+                                </td>
+                                
+                                <td style="width: 50%; padding-left: 10px; vertical-align: top; border: none;">
+                                    <h5 style="margin-bottom: 15px;">處理人員簽名</h5>
+                                    <div class="content-box" style="height: 120px; text-align: center; line-height: 100px;">
+                                        <t t-out="o.technician_name or ''"/>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                        
+                        <!-- 附件照片 -->
+                        <div t-if="o.include_photos_in_pdf and o.service_order_id.attachment_ids">
+                            <h5 style="margin-bottom: 15px; margin-top: 20px;">附件照片</h5>
+                            <table style="width: 100%;">
+                                <tr>
+                                    <t t-foreach="o.service_order_id.attachment_ids.filtered(lambda a: a.mimetype and 'image' in a.mimetype)" t-as="attachment">
+                                        <td style="width: 33.33%; text-align: center; padding: 5px;" t-if="attachment_index % 3 == 0 and attachment_index &lt; 6">
+                                            <img t-att-src="'/web/content/%s' % attachment.id" 
+                                                 style="max-width: 100%; max-height: 200px; border: 1px solid #ccc;"/>
+                                            <div style="font-size: 12px; color: #666; margin-top: 5px;">
+                                                <t t-out="attachment.name or ''"/>
+                                            </div>
+                                        </td>
+                                    </t>
+                                </tr>
+                            </table>
+                        </div>
+                        
+                        <!-- 頁腳資訊 -->
+                        <div style="margin-top: 30px; text-align: center; font-size: 12px; color: #666;">
+                            <hr style="border-top: 1px solid #ccc;"/>
+                            <p>
+                                本客戶處理單由系統自動生成，生成時間: 
+                                <t t-esc="datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')"/>
+                            </p>
+                            <p>
+                                工單編號: <t t-out="o.service_order_id.name or ''"/> | 
+                                處理單編號: <t t-out="o.display_name or ''"/>
+                            </p>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+    
+    <!-- 客戶處理單報表（簡化版，不包含照片） -->
+    <record id="action_report_customer_service_sheet_simple" model="ir.actions.report">
+        <field name="name">客戶處理單報表（簡化版）</field>
+        <field name="model">customer.service.sheet</field>
+        <field name="report_type">qweb-html</field>
+        <field name="report_name">field_service_order.customer_service_sheet_document_simple</field>
+        <field name="report_file">field_service_order.customer_service_sheet_document_simple</field>
+        <field name="print_report_name">'%s_客戶處理單_簡化版' % (object.display_name)</field>
+        <field name="binding_model_id" ref="model_customer_service_sheet"/>
+        <field name="binding_type">report</field>
+    </record>
+    
+    <template id="customer_service_sheet_document_simple">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <!-- 使用相同模板但不包含照片 -->
+                        <t t-set="include_photos" t-value="False"/>
+                        <t t-call="field_service_order.customer_service_sheet_document"/>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+</odoo>
