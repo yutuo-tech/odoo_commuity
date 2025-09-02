@@ -2,3 +2,4 @@
 
 from . import service_order_sign_wizard
 from . import signature_upload_wizard
+from . import signature_view_wizard

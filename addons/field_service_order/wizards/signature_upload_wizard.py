@@ -121,9 +121,14 @@ class FieldServiceSignatureUploadWizard(models.TransientModel):
         """
         defaults = super().default_get(fields_list)
         
+        # 從 context 取得 active_id 作為 order_id
+        if 'order_id' in fields_list and self._context.get('active_id'):
+            defaults['order_id'] = self._context.get('active_id')
+        
         # 如果有 order_id，可以預填一些資訊
-        if 'order_id' in defaults and defaults['order_id']:
-            order = self.env['field.service.order'].browse(defaults['order_id'])
+        order_id = defaults.get('order_id')
+        if order_id:
+            order = self.env['field.service.order'].browse(order_id)
             
             if 'signed_by' in fields_list and not defaults.get('signed_by'):
                 # 根據簽名類型預設簽名人

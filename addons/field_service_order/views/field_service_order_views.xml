@@ -55,8 +55,7 @@
                         </div>
                     </button>
                     <button name="action_view_signature" type="object" 
-                            class="oe_stat_button" icon="fa-file-text-o"
-                            invisible="not signature_request_id">
+                            class="oe_stat_button" icon="fa-file-text-o">
                         <span>簽名</span>
                     </button>
                 </div>
@@ -514,8 +513,8 @@
                                     <div>
                                         <a name="action_view_part_replacements" type="object">零件更換</a>
                                     </div>
-                                    <div t-if="record.signature_request_id.raw_value">
-                                        <a name="action_view_signature" type="object">查看簽名</a>
+                                    <div>
+                                        <a name="action_view_signature" type="object">簽名</a>
                                     </div>
                                 </div>
                                 
@@ -626,5 +625,6 @@
             </p>
         </field>
     </record>
+
 
 </odoo>

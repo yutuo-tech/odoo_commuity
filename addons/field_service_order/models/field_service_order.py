@@ -274,7 +274,11 @@ class FieldServiceOrder(models.Model):
     
     maintenance_type = fields.Selection([
         ('routine', '例行保養'),
-        ('major', '大保養'),
+        ('major', '大保養'), 
+        ('quarterly', '季度保養'),
+        ('annual', '年度保養'),
+        ('emergency', '緊急保養'),
+        ('preventive', '預防性保養'),
     ], '保養類型', help='點選類型後可對應出不同的Check List')
     
     last_maintenance_date = fields.Date(
@@ -1121,7 +1125,23 @@ class FieldServiceOrder(models.Model):
     def action_view_signature(self):
         """檢視簽名記錄"""
         self.ensure_one()
-        if self.signature_request_id:
+        
+        # 優先檢查檔案上傳式簽名
+        if self.customer_signature_file:
+            # 建立一個暫時的簽名檢視精靈
+            wizard = self.env['field.service.signature.view.wizard'].create({
+                'order_id': self.id,
+            })
+            return {
+                'name': _('客戶簽名'),
+                'type': 'ir.actions.act_window',
+                'res_model': 'field.service.signature.view.wizard',
+                'view_mode': 'form',
+                'res_id': wizard.id,
+                'target': 'new',
+            }
+        # 回退到舊的簽名系統
+        elif self.signature_request_id:
             return {
                 'name': _('簽名記錄'),
                 'type': 'ir.actions.act_window',
@@ -1131,15 +1151,23 @@ class FieldServiceOrder(models.Model):
                 'target': 'current',
             }
         else:
+            # 沒有簽名記錄時，提供上傳選項
             return {
-                'type': 'ir.actions.client',
-                'tag': 'display_notification',
-                'params': {
-                    'title': _('無簽名記錄'),
-                    'message': _('此工單尚未發送簽名請求'),
-                    'type': 'warning',
+                'name': _('上傳客戶簽名'),
+                'type': 'ir.actions.act_window',
+                'res_model': 'field.service.signature.upload.wizard',
+                'view_mode': 'form',
+                'target': 'new',
+                'context': {
+                    'active_id': self.id,
+                    'default_order_id': self.id,
+                    'default_signature_type': 'customer'
                 }
             }
+    
+    def action_close(self):
+        """關閉當前視窗"""
+        return {'type': 'ir.actions.act_window_close'}
     
     def action_create_todo(self):
         """

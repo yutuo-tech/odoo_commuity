@@ -57,6 +57,7 @@
         
         # Wizards
         'wizards/signature_upload_wizard_views.xml',
+        'wizards/signature_view_wizard_views.xml',
         
         # Reports
         'reports/customer_service_report.xml',
