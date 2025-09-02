@@ -14,7 +14,8 @@ class CompanyDepartment(models.Model):
     - 與聯絡人和設備建立關聯
     """
     _name = 'company.department'
-    _inherit = ['mail.thread', 'mail.activity.mixin']
+    # 移除 mail 繼承以避免自動 Chatter
+    # _inherit = ['mail.thread', 'mail.activity.mixin']
     _description = '公司部門'
     _order = 'company_id, parent_id, sequence, name'
     _rec_name = 'display_name'

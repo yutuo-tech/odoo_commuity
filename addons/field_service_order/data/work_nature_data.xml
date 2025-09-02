@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- 標籤分類 -->
+    <record id="tag_category_visit" model="field.service.tag.category">
+        <field name="name">拜訪類</field>
+        <field name="color">1</field>
+        <field name="description">與客戶拜訪相關的標籤</field>
+    </record>
+
+    <record id="tag_category_technical" model="field.service.tag.category">
+        <field name="name">技術類</field>
+        <field name="color">2</field>
+        <field name="description">技術服務相關的標籤</field>
+    </record>
+
+    <record id="tag_category_training" model="field.service.tag.category">
+        <field name="name">教育訓練</field>
+        <field name="color">3</field>
+        <field name="description">教育訓練相關的標籤</field>
+    </record>
+
+    <!-- 預設標籤 -->
+    <record id="tag_doctor_visit" model="field.service.tag">
+        <field name="name">醫師拜訪</field>
+        <field name="category_id" ref="tag_category_visit"/>
+        <field name="color">1</field>
+        <field name="description">拜訪醫師相關的工作</field>
+    </record>
+
+    <record id="tag_purchase_visit" model="field.service.tag">
+        <field name="name">採購拜訪</field>
+        <field name="category_id" ref="tag_category_visit"/>
+        <field name="color">1</field>
+        <field name="description">拜訪採購相關的工作</field>
+    </record>
+
+    <record id="tag_maintenance_service" model="field.service.tag">
+        <field name="name">維護服務</field>
+        <field name="category_id" ref="tag_category_technical"/>
+        <field name="color">2</field>
+        <field name="description">設備維護相關的工作</field>
+    </record>
+
+    <record id="tag_installation" model="field.service.tag">
+        <field name="name">設備安裝</field>
+        <field name="category_id" ref="tag_category_technical"/>
+        <field name="color">2</field>
+        <field name="description">設備安裝相關的工作</field>
+    </record>
+
+    <record id="tag_training_operation" model="field.service.tag">
+        <field name="name">操作訓練</field>
+        <field name="category_id" ref="tag_category_training"/>
+        <field name="color">3</field>
+        <field name="description">設備操作訓練</field>
+    </record>
+
+    <record id="tag_training_maintenance" model="field.service.tag">
+        <field name="name">維護訓練</field>
+        <field name="category_id" ref="tag_category_training"/>
+        <field name="color">3</field>
+        <field name="description">設備維護訓練</field>
+    </record>
+
+    <record id="tag_urgent" model="field.service.tag">
+        <field name="name">緊急處理</field>
+        <field name="color">5</field>
+        <field name="description">需要緊急處理的工作</field>
+    </record>
+
+    <record id="tag_follow_up" model="field.service.tag">
+        <field name="name">追蹤回訪</field>
+        <field name="color">4</field>
+        <field name="description">需要後續追蹤的工作</field>
+    </record>
+
+
+    <!-- 費用類型 -->
+    <record id="expense_type_material" model="field.service.expense.type">
+        <field name="name">材料費</field>
+        <field name="code">MATERIAL</field>
+        <field name="default_amount">1000</field>
+        <field name="description">維修或保養所需的材料費用</field>
+    </record>
+
+    <record id="expense_type_labor" model="field.service.expense.type">
+        <field name="name">工資</field>
+        <field name="code">LABOR</field>
+        <field name="default_amount">2000</field>
+        <field name="description">技術人員的工作費用</field>
+    </record>
+
+    <record id="expense_type_transport" model="field.service.expense.type">
+        <field name="name">交通費</field>
+        <field name="code">TRANSPORT</field>
+        <field name="default_amount">500</field>
+        <field name="description">前往客戶現場的交通費用</field>
+    </record>
+
+    <record id="expense_type_accommodation" model="field.service.expense.type">
+        <field name="name">住宿費</field>
+        <field name="code">ACCOMMODATION</field>
+        <field name="default_amount">3000</field>
+        <field name="description">外地服務的住宿費用</field>
+    </record>
+
+</odoo>

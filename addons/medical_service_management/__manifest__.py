@@ -52,6 +52,15 @@
         'views/menu.xml',
     ],
     
+    # 前端資源
+    'assets': {
+        'web.assets_backend': [
+            # 在表單控制器樣式之後載入，確保能覆蓋核心的 margin-right: auto
+            ('after', 'web/static/src/views/form/form_controller.scss', 
+             'medical_service_management/static/src/scss/medical_responsive.scss'),
+        ],
+    },
+    
     # 示範資料
     'demo': [
         'demo/medical_service_demo.xml',

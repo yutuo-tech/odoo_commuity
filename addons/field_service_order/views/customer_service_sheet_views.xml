@@ -1,0 +1,368 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- 客戶處理單表單視圖 -->
+    <record id="customer_service_sheet_form_view" model="ir.ui.view">
+        <field name="name">客戶處理單表單</field>
+        <field name="model">customer.service.sheet</field>
+        <field name="arch" type="xml">
+            <form string="客戶處理單">
+                <header>
+                    <!-- 狀態按鈕 -->
+                    <button name="action_confirm" type="object" string="確認" 
+                            class="oe_highlight" invisible="state != 'draft'"/>
+                    <button name="action_send_to_customer" type="object" string="發送客戶" 
+                            invisible="state not in ['confirmed']"/>
+                    <button name="action_complete" type="object" string="完成" 
+                            class="oe_highlight" invisible="state != 'signed'"/>
+                    
+                    <!-- 功能按鈕 -->
+                    <button name="action_generate_pdf" type="object" string="列印預覽" 
+                            icon="fa-print" invisible="state == 'draft'"
+                            help="開啟列印預覽頁面，可使用瀏覽器的列印功能"/>
+                    <button name="action_download_pdf" type="object" string="下載PDF" 
+                            icon="fa-download" invisible="not pdf_file"/>
+                    <button name="action_upload_signature" type="object" string="上傳簽名" 
+                            icon="fa-pencil" invisible="signature_status == 'signed'"/>
+                    
+                    <!-- 狀態列 -->
+                    <field name="state" widget="statusbar" 
+                           statusbar_visible="draft,confirmed,sent,signed,completed"/>
+                </header>
+                
+                <!-- 標題區域 -->
+                <div class="oe_title">
+                    <h1>
+                        <field name="display_name" readonly="1"/>
+                    </h1>
+                    <h3>
+                        <field name="order_type" widget="badge" 
+                               decoration-info="order_type == 'maintenance'" 
+                               decoration-warning="order_type == 'repair'"
+                               decoration-success="order_type == 'work_log'"/>
+                    </h3>
+                </div>
+                
+                <!-- 智能按鈕區域 -->
+                <div class="oe_button_box" name="button_box">
+                    <button name="action_view_service_order" type="object" 
+                            class="oe_stat_button" icon="fa-wrench">
+                        <span>工單</span>
+                    </button>
+                    <button name="action_download_pdf" type="object" 
+                            class="oe_stat_button" icon="fa-file-pdf-o"
+                            invisible="not pdf_file">
+                        <span>PDF</span>
+                    </button>
+                </div>
+                
+                <!-- 主要內容區域 -->
+                <sheet>
+                    <!-- 基本資訊 -->
+                    <group>
+                        <group name="basic_info" string="基本資訊">
+                            <field name="service_date" readonly="1"/>
+                            <field name="service_time" readonly="1"/>
+                            <field name="customer_name" readonly="1"/>
+                            <field name="department_name" readonly="1"/>
+                            <field name="service_location" readonly="1"/>
+                            <field name="service_type_display" readonly="1"/>
+                            <field name="technician_name" readonly="1"/>
+                        </group>
+                        
+                        <group name="status_info" string="狀態資訊">
+                            <field name="signature_status" widget="badge" 
+                                   decoration-danger="signature_status == 'pending'"
+                                   decoration-success="signature_status == 'signed'"
+                                   decoration-muted="signature_status == 'rejected'"/>
+                            <field name="signature_upload_date" readonly="1" 
+                                   invisible="not signature_upload_date"/>
+                            <field name="pdf_generated_date" readonly="1" 
+                                   invisible="not pdf_generated_date"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="active"/>
+                        </group>
+                    </group>
+                    
+                    <!-- 根據工單類型顯示不同內容 -->
+                    <notebook>
+                        <!-- 保養工單專用頁籤 -->
+                        <page string="保養資訊" name="maintenance_info" 
+                              invisible="order_type != 'maintenance'">
+                            <group>
+                                <group name="equipment_info" string="設備資訊">
+                                    <field name="equipment_model" readonly="1"/>
+                                    <field name="unit_number" readonly="1"/>
+                                    <field name="serial_number" readonly="1"/>
+                                    <field name="asset_number" readonly="1"/>
+                                </group>
+                            </group>
+                            
+                            <group string="保養檢查清單">
+                                <field name="maintenance_checklist" nolabel="1" readonly="1" 
+                                       widget="html"/>
+                            </group>
+                        </page>
+                        
+                        <!-- 維修單/工作日誌專用頁籤 -->
+                        <page string="服務內容" name="service_content" 
+                              invisible="order_type == 'maintenance'">
+                            <group>
+                                <field name="work_nature" readonly="1" 
+                                       invisible="order_type != 'work_log'" string="工作性質"/>
+                            </group>
+                            
+                            <group string="服務詳情">
+                                <field name="problem_description" readonly="1" 
+                                       widget="text" nolabel="1"/>
+                                <separator string="處理事項"/>
+                                <field name="solution_description" readonly="1" 
+                                       widget="text" nolabel="1"/>
+                                
+                                <!-- 維修單專用：零件更換記錄 -->
+                                <separator string="零件更換記錄" invisible="order_type != 'repair'"/>
+                                <field name="part_replacement_html" readonly="1" widget="html" nolabel="1" 
+                                       invisible="order_type != 'repair'"/>
+                                
+                                <!-- 維修單專用：維修問題 -->
+                                <separator string="維修問題" invisible="order_type != 'repair'"/>
+                                <field name="repair_problems_html" readonly="1" widget="html" nolabel="1" 
+                                       invisible="order_type != 'repair'"/>
+                            </group>
+                        </page>
+                        
+                        <!-- 客戶建議事項頁籤 -->
+                        <page string="客戶建議事項" name="customer_suggestion">
+                            <group>
+                                <field name="customer_suggestion" widget="text" nolabel="1" 
+                                       placeholder="請輸入客戶建議事項..."/>
+                            </group>
+                        </page>
+                        
+                        <!-- 簽名頁籤 -->
+                        <page string="客戶簽名" name="signature">
+                            <group>
+                                <group name="signature_info" string="簽名資訊">
+                                    <field name="signed_by"/>
+                                    <field name="signed_date"/>
+                                    <field name="signature_filename" readonly="1" 
+                                           invisible="not signature_filename"/>
+                                </group>
+                            </group>
+                            
+                            <group string="簽名檔案">
+                                <field name="customer_signature" widget="image" 
+                                       invisible="not customer_signature"/>
+                                <field name="x_customer_signature_file" widget="image" 
+                                       invisible="not x_customer_signature_file"/>
+                            </group>
+                            
+                            <div invisible="signature_status == 'signed'">
+                                <p>
+                                    <strong>提示：</strong>點擊上方「上傳簽名」按鈕來上傳客戶簽名檔案。
+                                </p>
+                            </div>
+                        </page>
+                        
+                        <!-- PDF 設定頁籤 -->
+                        <page string="PDF設定" name="pdf_settings">
+                            <group>
+                                <field name="include_photos_in_pdf"/>
+                                <field name="pdf_filename" readonly="1" invisible="not pdf_filename"/>
+                            </group>
+                            
+                            <div invisible="not pdf_file">
+                                <p>
+                                    <strong>PDF檔案已生成</strong><br/>
+                                    生成時間: <field name="pdf_generated_date" readonly="1"/>
+                                </p>
+                            </div>
+                        </page>
+                    </notebook>
+                </sheet>
+                
+                <!-- 訊息追蹤 - 隱藏不需要的功能
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+                -->
+            </form>
+        </field>
+    </record>
+    
+    <!-- 客戶處理單列表視圖 -->
+    <record id="customer_service_sheet_list_view" model="ir.ui.view">
+        <field name="name">客戶處理單列表</field>
+        <field name="model">customer.service.sheet</field>
+        <field name="arch" type="xml">
+            <list string="客戶處理單" default_order="create_date desc">
+                <field name="display_name"/>
+                <field name="order_type" widget="badge" 
+                       decoration-info="order_type == 'maintenance'" 
+                       decoration-warning="order_type == 'repair'"
+                       decoration-success="order_type == 'work_log'"/>
+                <field name="service_date"/>
+                <field name="customer_name"/>
+                <field name="department_name"/>
+                <field name="technician_name"/>
+                <field name="signature_status" widget="badge" 
+                       decoration-danger="signature_status == 'pending'"
+                       decoration-success="signature_status == 'signed'"
+                       decoration-muted="signature_status == 'rejected'"/>
+                <field name="state" widget="badge" 
+                       decoration-muted="state == 'draft'"
+                       decoration-info="state in ['confirmed', 'sent']"
+                       decoration-success="state in ['signed', 'completed']"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+                <field name="create_date" string="建立日期"/>
+            </list>
+        </field>
+    </record>
+    
+    <!-- 客戶處理單搜索視圖 -->
+    <record id="customer_service_sheet_search_view" model="ir.ui.view">
+        <field name="name">客戶處理單搜索</field>
+        <field name="model">customer.service.sheet</field>
+        <field name="arch" type="xml">
+            <search string="搜索客戶處理單">
+                <!-- 搜索欄位 -->
+                <field name="display_name" string="客戶處理單編號"/>
+                <field name="service_order_id" string="工單編號"/>
+                <field name="customer_name" string="客戶"/>
+                <field name="department_name" string="使用單位"/>
+                <field name="technician_name" string="技術人員"/>
+                <field name="serial_number" string="設備序號"/>
+                
+                <!-- 快速篩選 -->
+                <filter name="filter_draft" string="草稿" 
+                        domain="[('state', '=', 'draft')]"/>
+                <filter name="filter_confirmed" string="已確認" 
+                        domain="[('state', '=', 'confirmed')]"/>
+                <filter name="filter_sent" string="已發送" 
+                        domain="[('state', '=', 'sent')]"/>
+                <filter name="filter_signed" string="已簽名" 
+                        domain="[('signature_status', '=', 'signed')]"/>
+                <filter name="filter_completed" string="已完成" 
+                        domain="[('state', '=', 'completed')]"/>
+                
+                <separator/>
+                <filter name="filter_maintenance" string="保養工單" 
+                        domain="[('order_type', '=', 'maintenance')]"/>
+                <filter name="filter_repair" string="維修單" 
+                        domain="[('order_type', '=', 'repair')]"/>
+                <filter name="filter_work_log" string="工作日誌" 
+                        domain="[('order_type', '=', 'work_log')]"/>
+                
+                <separator/>
+                <filter name="filter_pending_signature" string="待簽名" 
+                        domain="[('signature_status', '=', 'pending')]"/>
+                <filter name="filter_no_pdf" string="未生成PDF" 
+                        domain="[('pdf_file', '=', False)]"/>
+                
+                <separator/>
+                <filter name="filter_this_month" string="本月" 
+                        domain="[('service_date', '&gt;=', (context_today() - datetime.timedelta(days=30)).strftime('%Y-%m-01')), 
+                                ('service_date', '&lt;', (context_today().replace(day=1) + datetime.timedelta(days=32)).strftime('%Y-%m-01'))]"/>
+                <filter name="filter_last_month" string="上月" 
+                        domain="[('service_date', '&gt;=', (context_today().replace(day=1) - datetime.timedelta(days=1)).strftime('%Y-%m-01')), 
+                                ('service_date', '&lt;', context_today().strftime('%Y-%m-01'))]"/>
+                
+                <!-- 分組 -->
+                <group expand="0" string="分組">
+                    <filter name="group_order_type" string="工單類型" 
+                            context="{'group_by': 'order_type'}"/>
+                    <filter name="group_state" string="狀態" 
+                            context="{'group_by': 'state'}"/>
+                    <filter name="group_signature_status" string="簽名狀態" 
+                            context="{'group_by': 'signature_status'}"/>
+                    <filter name="group_customer" string="客戶" 
+                            context="{'group_by': 'customer_name'}"/>
+                    <filter name="group_technician" string="技術人員" 
+                            context="{'group_by': 'technician_name'}"/>
+                    <filter name="group_service_date" string="服務日期" 
+                            context="{'group_by': 'service_date:month'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+    
+    <!-- 客戶處理單看板視圖 -->
+    <record id="customer_service_sheet_kanban_view" model="ir.ui.view">
+        <field name="name">客戶處理單看板</field>
+        <field name="model">customer.service.sheet</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="state" class="o_kanban_small_column">
+                <field name="display_name"/>
+                <field name="order_type"/>
+                <field name="service_date"/>
+                <field name="customer_name"/>
+                <field name="technician_name"/>
+                <field name="signature_status"/>
+                <field name="state"/>
+                <field name="color"/>
+                
+                <templates>
+                    <t t-name="card">
+                        <div t-attf-class="oe_kanban_color_#{kanban_getcolor(record.color.raw_value)} oe_kanban_card">
+                            <div class="oe_kanban_content">
+                                <div class="o_kanban_record_top">
+                                    <div class="o_kanban_record_headings">
+                                        <strong class="o_kanban_record_title">
+                                            <field name="display_name"/>
+                                        </strong>
+                                    </div>
+                                    <div class="o_kanban_record_headings">
+                                        <span t-attf-class="badge #{record.order_type.raw_value == 'maintenance' ? 'badge-info' : record.order_type.raw_value == 'repair' ? 'badge-warning' : 'badge-success'}">
+                                            <t t-if="record.order_type.raw_value == 'maintenance'">保養</t>
+                                            <t t-if="record.order_type.raw_value == 'repair'">維修</t>
+                                            <t t-if="record.order_type.raw_value == 'work_log'">工作日誌</t>
+                                        </span>
+                                    </div>
+                                </div>
+                                
+                                <div class="o_kanban_record_body">
+                                    <div><i class="fa fa-user" title="客戶"/> <field name="customer_name"/></div>
+                                    <div><i class="fa fa-calendar" title="服務日期"/> <field name="service_date"/></div>
+                                    <div><i class="fa fa-wrench" title="技術人員"/> <field name="technician_name"/></div>
+                                </div>
+                                
+                                <div class="o_kanban_record_bottom">
+                                    <div class="oe_kanban_bottom_left">
+                                        <span t-attf-class="badge #{record.signature_status.raw_value == 'signed' ? 'badge-success' : record.signature_status.raw_value == 'pending' ? 'badge-warning' : 'badge-secondary'}">
+                                            <t t-if="record.signature_status.raw_value == 'signed'">已簽名</t>
+                                            <t t-if="record.signature_status.raw_value == 'pending'">待簽名</t>
+                                            <t t-if="record.signature_status.raw_value == 'rejected'">已拒絕</t>
+                                        </span>
+                                    </div>
+                                    <div class="oe_kanban_bottom_right">
+                                        <field name="activity_ids" widget="kanban_activity"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+    
+    <!-- 客戶處理單動作 -->
+    <record id="action_customer_service_sheet" model="ir.actions.act_window">
+        <field name="name">客戶處理單</field>
+        <field name="res_model">customer.service.sheet</field>
+        <field name="view_mode">list,form,kanban</field>
+        <field name="search_view_id" ref="customer_service_sheet_search_view"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                建立您的第一個客戶處理單
+            </p>
+            <p>
+                客戶處理單是從服務工單生成的客戶服務文件，包含服務詳情、檢查清單和客戶簽名。
+                您可以從保養工單、維修單或工作日誌生成客戶處理單。
+            </p>
+        </field>
+    </record>
+
+</odoo>

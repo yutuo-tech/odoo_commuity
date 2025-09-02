@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- 保養工單序列 -->
+    <record id="seq_field_service_maintenance" model="ir.sequence">
+        <field name="name">保養工單序列</field>
+        <field name="code">field.service.order.maintenance</field>
+        <field name="prefix">MNT</field>
+        <field name="padding">5</field>
+        <field name="company_id" eval="False"/>
+        <field name="use_date_range">False</field>
+    </record>
+
+    <!-- 維修單序列 -->
+    <record id="seq_field_service_repair" model="ir.sequence">
+        <field name="name">維修單序列</field>
+        <field name="code">field.service.order.repair</field>
+        <field name="prefix">REP</field>
+        <field name="padding">5</field>
+        <field name="company_id" eval="False"/>
+        <field name="use_date_range">False</field>
+    </record>
+
+    <!-- 工作日誌序列 -->
+    <record id="seq_field_service_work_log" model="ir.sequence">
+        <field name="name">工作日誌序列</field>
+        <field name="code">field.service.order.work_log</field>
+        <field name="prefix">WLG</field>
+        <field name="padding">5</field>
+        <field name="company_id" eval="False"/>
+        <field name="use_date_range">False</field>
+    </record>
+
+    <!-- 通用服務工單序列 (備用) -->
+    <record id="seq_field_service_order" model="ir.sequence">
+        <field name="name">服務工單序列</field>
+        <field name="code">field.service.order</field>
+        <field name="prefix">FSO</field>
+        <field name="padding">5</field>
+        <field name="company_id" eval="False"/>
+        <field name="use_date_range">False</field>
+    </record>
+
+</odoo>

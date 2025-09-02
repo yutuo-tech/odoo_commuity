@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- 簽名上傳精靈表單視圖 -->
+    <record id="view_signature_upload_wizard_form" model="ir.ui.view">
+        <field name="name">field.service.signature.upload.wizard.form</field>
+        <field name="model">field.service.signature.upload.wizard</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="oe_title">
+                        <h2>
+                            <field name="signature_type" readonly="1" invisible="1"/>
+                            <span invisible="signature_type != 'customer'">上傳客戶簽名</span>
+                            <span invisible="signature_type != 'technician'">上傳技術人員簽名</span>
+                        </h2>
+                    </div>
+                    
+                    <group>
+                        <group string="基本資訊">
+                            <field name="order_id" readonly="1" 
+                                   options="{'no_open': True}"/>
+                            <field name="signature_type" readonly="1"/>
+                        </group>
+                        <group string="簽名資訊">
+                            <field name="signed_by" required="1"/>
+                            <field name="signed_date" required="1"/>
+                        </group>
+                    </group>
+                    
+                    <group string="簽名檔案">
+                        <field name="signature_file" required="1" 
+                               widget="binary" 
+                               filename="filename"
+                               options="{'accepted_file_extensions': '.jpg,.jpeg,.png,.pdf,.gif'}"/>
+                        <field name="filename" required="1" 
+                               placeholder="例如：客戶簽名.jpg"/>
+                    </group>
+                    
+                    <group string="備註" invisible="1">
+                        <field name="notes" nolabel="1" 
+                               placeholder="請輸入關於此簽名的任何備註或說明..."/>
+                    </group>
+                    
+                    <div class="alert alert-info" role="alert">
+                        <strong>檔案格式說明：</strong>
+                        <ul class="mb-0">
+                            <li>支援的格式：JPG, PNG, PDF, GIF</li>
+                            <li>建議檔案大小：小於 10MB</li>
+                            <li>建議解析度：至少 300 DPI，確保簽名清晰可見</li>
+                        </ul>
+                    </div>
+                </sheet>
+                
+                <footer>
+                    <button name="action_upload_signature" 
+                            string="確認上傳" 
+                            type="object" 
+                            class="btn-primary"/>
+                    <button name="action_cancel" 
+                            string="取消" 
+                            type="object" 
+                            class="btn-secondary"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- 簽名上傳動作 -->
+    <record id="action_signature_upload_wizard" model="ir.actions.act_window">
+        <field name="name">上傳簽名</field>
+        <field name="res_model">field.service.signature.upload.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="binding_model_id" ref="model_field_service_order"/>
+        <field name="binding_view_types">form</field>
+    </record>
+
+</odoo>

@@ -6,7 +6,7 @@
         <field name="name">service.equipment.form</field>
         <field name="model">service.equipment</field>
         <field name="arch" type="xml">
-            <form string="設備管理">
+            <form string="設備管理" class="o_service_equipment_responsive">
                 <header>
                     <field name="status" widget="statusbar" statusbar_visible="in_production,in_stock,shipped,in_operation"/>
                 </header>
@@ -27,52 +27,70 @@
                         </h2>
                     </div>
                     
-                    <group>
-                        <group name="basic_info" string="基本資訊">
-                            <field name="asset_number"/>
-                            <field name="variant_id" domain="[('product_tmpl_id', '=', product_id)]"/>
-                            <field name="software_version" placeholder="例如：v1.2.3、2024.1"/>
-                            <field name="status"/>
-                            <field name="price"/>
-                            <field name="currency_id"/>
-                        </group>
-                        <group name="customer_info" string="客戶資訊">
-                            <field name="partner_id"/>
-                            <field name="partner_tax_id"/>
-                            <field name="department_id" domain="[('company_id', '=', partner_id)]"/>
-                            <field name="contact_id" domain="[('company_id', '=', partner_id)]"/>
-                            <field name="installation_location"/>
-                        </group>
-                    </group>
+                    <div class="row o_equipment_info_groups">
+                        <div class="col-12 col-md-6">
+                            <group name="basic_info" string="基本資訊">
+                                <field name="asset_number"/>
+                                <field name="variant_id" domain="[('product_tmpl_id', '=', product_id)]"/>
+                                <field name="software_version" placeholder="例如：v1.2.3、2024.1"/>
+                                <field name="status"/>
+                                <field name="price"/>
+                                <field name="currency_id"/>
+                            </group>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <group name="customer_info" string="客戶資訊">
+                                <field name="partner_id"/>
+                                <field name="partner_tax_id"/>
+                                <field name="department_id" domain="[('company_id', '=', partner_id)]"/>
+                                <field name="contact_id" domain="[('company_id', '=', partner_id)]"/>
+                                <field name="installation_location"/>
+                            </group>
+                        </div>
+                    </div>
                     
-                    <group>
-                        <group name="personnel_info" string="人員資訊">
-                            <field name="receiver_contact_id" domain="[('company_id', '=', partner_id)]"/>
-                            <field name="responsible_employee_id"/>
-                        </group>
-                        <group></group>
-                    </group>
+                    <div class="row">
+                        <div class="col-12 col-md-6">
+                            <group name="personnel_info" string="人員資訊">
+                                <field name="receiver_contact_id" domain="[('company_id', '=', partner_id)]"/>
+                                <field name="responsible_employee_id"/>
+                            </group>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <!-- 預留空間 -->
+                        </div>
+                    </div>
                     
-                    <group>
-                        <group name="dates" string="日期資訊">
-                            <field name="production_date"/>
-                            <field name="purchase_date"/>
-                            <field name="manufacture_date"/>
-                            <field name="delivery_date"/>
-                            <field name="installation_date"/>
-                            <field name="warranty_start_date"/>
-                            <field name="warranty_end_date"/>
-                        </group>
-                        <group name="maintenance_info" string="維護資訊">
-                            <field name="is_under_warranty" readonly="1"/>
-                            <field name="warranty_days_remaining" readonly="1"/>
-                            <field name="maintenance_frequency"/>
-                            <field name="last_maintenance_date"/>
-                            <field name="next_maintenance_date"/>
-                            <field name="maintenance_count" readonly="1"/>
-                            <field name="repair_count" readonly="1"/>
-                        </group>
-                    </group>
+                    <div class="row o_equipment_dates_grid">
+                        <div class="col-12 col-lg-8">
+                            <group name="dates" string="日期資訊">
+                                <div class="row">
+                                    <div class="col-12 col-sm-6">
+                                        <field name="production_date"/>
+                                        <field name="purchase_date"/>
+                                        <field name="manufacture_date"/>
+                                    </div>
+                                    <div class="col-12 col-sm-6">
+                                        <field name="delivery_date"/>
+                                        <field name="installation_date"/>
+                                        <field name="warranty_start_date"/>
+                                        <field name="warranty_end_date"/>
+                                    </div>
+                                </div>
+                            </group>
+                        </div>
+                        <div class="col-12 col-lg-4">
+                            <group name="maintenance_info" string="維護資訊">
+                                <field name="is_under_warranty" readonly="1"/>
+                                <field name="warranty_days_remaining" readonly="1"/>
+                                <field name="maintenance_frequency"/>
+                                <field name="last_maintenance_date"/>
+                                <field name="next_maintenance_date"/>
+                                <field name="maintenance_count" readonly="1"/>
+                                <field name="repair_count" readonly="1"/>
+                            </group>
+                        </div>
+                    </div>
                     
                     <notebook>
                         <page string="相關合約" name="contracts">
@@ -91,11 +109,13 @@
                         </page>
                     </notebook>
                 </sheet>
+                <!-- Chatter 隱藏不需要的功能
                 <div class="oe_chatter">
                     <field name="message_follower_ids"/>
                     <field name="activity_ids"/>
                     <field name="message_ids"/>
                 </div>
+                -->
             </form>
         </field>
     </record>
@@ -105,7 +125,7 @@
         <field name="name">service.equipment.list</field>
         <field name="model">service.equipment</field>
         <field name="arch" type="xml">
-            <list string="設備清單" default_order="name">
+            <list string="設備清單" default_order="name" class="o_equipment_list_responsive">
                 <field name="name"/>
                 <field name="product_id"/>
                 <field name="variant_id"/>
@@ -130,7 +150,7 @@
         <field name="name">service.equipment.kanban</field>
         <field name="model">service.equipment</field>
         <field name="arch" type="xml">
-            <kanban default_group_by="status">
+            <kanban default_group_by="status" class="o_equipment_kanban">
                 <field name="name"/>
                 <field name="product_id"/>
                 <field name="partner_id"/>

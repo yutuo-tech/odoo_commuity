@@ -6,7 +6,7 @@
         <field name="name">company.contact.form</field>
         <field name="model">company.contact</field>
         <field name="arch" type="xml">
-            <form string="聯絡人">
+            <form string="聯絡人" class="o_company_contact_responsive">
                 <header>
                     <!-- 標準按鈕會自動顯示（儲存/捨棄） -->
                 </header>
@@ -90,12 +90,13 @@
 
                 </sheet>
                 
-                <!-- 訊息和活動 -->
+                <!-- 訊息和活動 - 隱藏不需要的功能
                 <div class="oe_chatter">
                     <field name="message_follower_ids" groups="base.group_user"/>
                     <field name="activity_ids"/>
                     <field name="message_ids"/>
                 </div>
+                -->
             </form>
         </field>
     </record>

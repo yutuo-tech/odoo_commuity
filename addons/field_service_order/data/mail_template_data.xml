@@ -1,0 +1,306 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- 工單確認郵件模板 -->
+    <record id="mail_template_order_confirmed" model="mail.template">
+        <field name="name">服務工單確認通知</field>
+        <field name="model_id" ref="model_field_service_order"/>
+        <field name="subject">服務工單已確認 - {{ object.name }}</field>
+        <field name="email_from">{{ (object.company_id.email or user.email) }}</field>
+        <field name="email_to">{{ object.partner_id.email }}</field>
+        <field name="body_html" type="html">
+<div style="margin: 0px; padding: 0px; font-family: 'Lucida Grande', Ubuntu, Arial, Verdana, sans-serif; font-size: 12px; color: rgb(34, 34, 34); background-color: #EDEDED;">
+    <table border="0" cellpadding="0" cellspacing="0" style="padding-top: 16px; background-color: #EDEDED; font-family:'Lucida Grande', Ubuntu, Arial, Verdana, sans-serif; font-size: 12px; width:100%;">
+        <tr>
+            <td align="center">
+                <table border="0" cellpadding="0" cellspacing="0" width="590" style="padding: 16px; background-color: white; color: #515166; border-top: 5px solid #875A7B;">
+                    <tr>
+                        <td align="center" style="min-height: 590px;">
+                            <table border="0" cellpadding="0" cellspacing="0" width="590" style="min-height: 590px;">
+                                <tr>
+                                    <td valign="top" style="font-size: 13px;">
+                                        <h3 style="margin: 0px; padding: 0px; color: #875A7B;">
+                                            服務工單確認通知
+                                        </h3>
+                                        <br/>
+                                        <p>親愛的 <strong>{{ object.partner_id.name }}</strong>，</p>
+                                        <p>您的服務工單已經確認，詳細資訊如下：</p>
+                                        
+                                        <table border="1" cellpadding="5" cellspacing="0" style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+                                            <tr>
+                                                <td style="background-color: #f5f5f5; font-weight: bold; width: 30%;">工單編號</td>
+                                                <td>{{ object.name }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="background-color: #f5f5f5; font-weight: bold;">工單類型</td>
+                                                <td>
+                                                    {% if object.order_type == 'maintenance' %}保養工單
+                                                    {% elif object.order_type == 'repair' %}維修單
+                                                    {% elif object.order_type == 'work_log' %}工作日誌
+                                                    {% else %}{{ object.order_type }}
+                                                    {% endif %}
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="background-color: #f5f5f5; font-weight: bold;">服務日期</td>
+                                                <td>{{ object.date }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="background-color: #f5f5f5; font-weight: bold;">服務人員</td>
+                                                <td>{{ object.technician_id.name or '' }}</td>
+                                            </tr>
+                                            {% if object.equipment_id %}
+                                            <tr>
+                                                <td style="background-color: #f5f5f5; font-weight: bold;">設備序號</td>
+                                                <td>{{ object.serial_number or '' }}</td>
+                                            </tr>
+                                            {% endif %}
+                                            {% if object.start_time %}
+                                            <tr>
+                                                <td style="background-color: #f5f5f5; font-weight: bold;">預計開始時間</td>
+                                                <td>{{ object.start_time }}</td>
+                                            </tr>
+                                            {% endif %}
+                                        </table>
+                                        
+                                        <p>我們的技術人員將按時到達現場為您提供服務。如有任何問題，請聯繫我們。</p>
+                                        
+                                        <p>感謝您選擇我們的服務！</p>
+                                        
+                                        <br/>
+                                        <p style="color: #888;">
+                                            此郵件由系統自動發送，請勿回覆。<br/>
+                                            如需協助，請聯繫：{{ object.company_id.phone or '' }}
+                                        </p>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</div>
+        </field>
+    </record>
+
+    <!-- 工單完成郵件模板 -->
+    <record id="mail_template_order_completed" model="mail.template">
+        <field name="name">服務工單完成通知</field>
+        <field name="model_id" ref="model_field_service_order"/>
+        <field name="subject">服務工單已完成 - {{ object.name }}</field>
+        <field name="email_from">{{ (object.company_id.email or user.email) }}</field>
+        <field name="email_to">{{ object.partner_id.email }}</field>
+        <field name="body_html" type="html">
+<div style="margin: 0px; padding: 0px; font-family: 'Lucida Grande', Ubuntu, Arial, Verdana, sans-serif; font-size: 12px; color: rgb(34, 34, 34); background-color: #EDEDED;">
+    <table border="0" cellpadding="0" cellspacing="0" style="padding-top: 16px; background-color: #EDEDED; font-family:'Lucida Grande', Ubuntu, Arial, Verdana, sans-serif; font-size: 12px; width:100%;">
+        <tr>
+            <td align="center">
+                <table border="0" cellpadding="0" cellspacing="0" width="590" style="padding: 16px; background-color: white; color: #515166; border-top: 5px solid #28a745;">
+                    <tr>
+                        <td align="center" style="min-height: 590px;">
+                            <table border="0" cellpadding="0" cellspacing="0" width="590" style="min-height: 590px;">
+                                <tr>
+                                    <td valign="top" style="font-size: 13px;">
+                                        <h3 style="margin: 0px; padding: 0px; color: #28a745;">
+                                            ✅ 服務工單已完成
+                                        </h3>
+                                        <br/>
+                                        <p>親愛的 <strong>{{ object.partner_id.name }}</strong>，</p>
+                                        <p>您的服務工單已完成，詳細資訊如下：</p>
+                                        
+                                        <table border="1" cellpadding="5" cellspacing="0" style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+                                            <tr>
+                                                <td style="background-color: #f5f5f5; font-weight: bold; width: 30%;">工單編號</td>
+                                                <td>{{ object.name }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="background-color: #f5f5f5; font-weight: bold;">服務日期</td>
+                                                <td>{{ object.date }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="background-color: #f5f5f5; font-weight: bold;">服務人員</td>
+                                                <td>{{ object.technician_id.name or '' }}</td>
+                                            </tr>
+                                            {% if object.actual_hours %}
+                                            <tr>
+                                                <td style="background-color: #f5f5f5; font-weight: bold;">實際工時</td>
+                                                <td>{{ "%.1f"|format(object.actual_hours) }} 小時</td>
+                                            </tr>
+                                            {% endif %}
+                                            {% if object.notes %}
+                                            <tr>
+                                                <td style="background-color: #f5f5f5; font-weight: bold;">備註</td>
+                                                <td>{{ object.notes }}</td>
+                                            </tr>
+                                            {% endif %}
+                                        </table>
+                                        
+                                        <p>我們將稍後發送客戶服務處理單供您簽名確認。</p>
+                                        
+                                        <p>感謝您對我們服務的信任與支持！</p>
+                                        
+                                        <br/>
+                                        <p style="color: #888;">
+                                            此郵件由系統自動發送，請勿回覆。<br/>
+                                            如需協助，請聯繫：{{ object.company_id.phone or '' }}
+                                        </p>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</div>
+        </field>
+    </record>
+
+    <!-- 簽名請求郵件模板 -->
+    <record id="mail_template_signature_request" model="mail.template">
+        <field name="name">客戶簽名請求</field>
+        <field name="model_id" ref="model_field_service_order"/>
+        <field name="subject">請簽名確認服務處理單 - {{ object.name }}</field>
+        <field name="email_from">{{ (object.company_id.email or user.email) }}</field>
+        <field name="email_to">{{ object.partner_id.email }}</field>
+        <field name="body_html" type="html">
+<div style="margin: 0px; padding: 0px; font-family: 'Lucida Grande', Ubuntu, Arial, Verdana, sans-serif; font-size: 12px; color: rgb(34, 34, 34); background-color: #EDEDED;">
+    <table border="0" cellpadding="0" cellspacing="0" style="padding-top: 16px; background-color: #EDEDED; font-family:'Lucida Grande', Ubuntu, Arial, Verdana, sans-serif; font-size: 12px; width:100%;">
+        <tr>
+            <td align="center">
+                <table border="0" cellpadding="0" cellspacing="0" width="590" style="padding: 16px; background-color: white; color: #515166; border-top: 5px solid #17a2b8;">
+                    <tr>
+                        <td align="center" style="min-height: 590px;">
+                            <table border="0" cellpadding="0" cellspacing="0" width="590" style="min-height: 590px;">
+                                <tr>
+                                    <td valign="top" style="font-size: 13px;">
+                                        <h3 style="margin: 0px; padding: 0px; color: #17a2b8;">
+                                            📋 請簽名確認服務處理單
+                                        </h3>
+                                        <br/>
+                                        <p>親愛的 <strong>{{ object.partner_id.name }}</strong>，</p>
+                                        <p>您的服務工單已完成，請點選以下連結進行線上簽名確認：</p>
+                                        
+                                        <div style="text-align: center; margin: 30px 0;">
+                                            <a href="{{ ctx['signature_url'] if ctx and ctx.get('signature_url') else '#' }}" 
+                                               style="background-color: #17a2b8; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; font-weight: bold; display: inline-block;">
+                                                📝 點此簽名
+                                            </a>
+                                        </div>
+                                        
+                                        <table border="1" cellpadding="5" cellspacing="0" style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+                                            <tr>
+                                                <td style="background-color: #f5f5f5; font-weight: bold; width: 30%;">工單編號</td>
+                                                <td>{{ object.name }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="background-color: #f5f5f5; font-weight: bold;">服務日期</td>
+                                                <td>{{ object.date }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="background-color: #f5f5f5; font-weight: bold;">服務人員</td>
+                                                <td>{{ object.technician_id.name or '' }}</td>
+                                            </tr>
+                                            {% if object.equipment_id %}
+                                            <tr>
+                                                <td style="background-color: #f5f5f5; font-weight: bold;">設備序號</td>
+                                                <td>{{ object.serial_number or '' }}</td>
+                                            </tr>
+                                            {% endif %}
+                                        </table>
+                                        
+                                        <p><strong>注意事項：</strong></p>
+                                        <ul>
+                                            <li>請使用手機或平板電腦開啟簽名連結</li>
+                                            <li>簽名後系統將自動儲存並發送確認郵件</li>
+                                            <li>如有問題請立即聯繫我們</li>
+                                        </ul>
+                                        
+                                        <p>感謝您的配合！</p>
+                                        
+                                        <br/>
+                                        <p style="color: #888;">
+                                            此郵件由系統自動發送，請勿回覆。<br/>
+                                            如需協助，請聯繫：{{ object.company_id.phone or '' }}
+                                        </p>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</div>
+        </field>
+    </record>
+
+    <!-- 簽名完成確認郵件模板 -->
+    <record id="mail_template_signature_completed" model="mail.template">
+        <field name="name">簽名完成確認</field>
+        <field name="model_id" ref="model_field_service_order"/>
+        <field name="subject">服務處理單已簽名完成 - {{ object.name }}</field>
+        <field name="email_from">{{ (object.company_id.email or user.email) }}</field>
+        <field name="email_to">{{ object.partner_id.email }}</field>
+        <field name="body_html" type="html">
+<div style="margin: 0px; padding: 0px; font-family: 'Lucida Grande', Ubuntu, Arial, Verdana, sans-serif; font-size: 12px; color: rgb(34, 34, 34); background-color: #EDEDED;">
+    <table border="0" cellpadding="0" cellspacing="0" style="padding-top: 16px; background-color: #EDEDED; font-family:'Lucida Grande', Ubuntu, Arial, Verdana, sans-serif; font-size: 12px; width:100%;">
+        <tr>
+            <td align="center">
+                <table border="0" cellpadding="0" cellspacing="0" width="590" style="padding: 16px; background-color: white; color: #515166; border-top: 5px solid #28a745;">
+                    <tr>
+                        <td align="center" style="min-height: 590px;">
+                            <table border="0" cellpadding="0" cellspacing="0" width="590" style="min-height: 590px;">
+                                <tr>
+                                    <td valign="top" style="font-size: 13px;">
+                                        <h3 style="margin: 0px; padding: 0px; color: #28a745;">
+                                            ✅ 服務處理單已簽名完成
+                                        </h3>
+                                        <br/>
+                                        <p>親愛的 <strong>{{ object.partner_id.name }}</strong>，</p>
+                                        <p>您已成功簽名確認服務處理單，感謝您的配合！</p>
+                                        
+                                        <table border="1" cellpadding="5" cellspacing="0" style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+                                            <tr>
+                                                <td style="background-color: #f5f5f5; font-weight: bold; width: 30%;">工單編號</td>
+                                                <td>{{ object.name }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="background-color: #f5f5f5; font-weight: bold;">簽名時間</td>
+                                                <td>{{ object.signed_date }}</td>
+                                            </tr>
+                                            {% if object.signed_by %}
+                                            <tr>
+                                                <td style="background-color: #f5f5f5; font-weight: bold;">簽名人</td>
+                                                <td>{{ object.signed_by }}</td>
+                                            </tr>
+                                            {% endif %}
+                                        </table>
+                                        
+                                        <p>已完成的服務處理單將歸檔保存，您可以隨時聯繫我們索取相關文件。</p>
+                                        
+                                        <p>再次感謝您選擇我們的服務！</p>
+                                        
+                                        <br/>
+                                        <p style="color: #888;">
+                                            此郵件由系統自動發送，請勿回覆。<br/>
+                                            如需協助，請聯繫：{{ object.company_id.phone or '' }}
+                                        </p>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</div>
+        </field>
+    </record>
+
+</odoo>

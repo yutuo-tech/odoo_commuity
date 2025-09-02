@@ -1,0 +1,480 @@
+/*
+ * Service Contract Management - 響應式設計樣式
+ * 優化服務合約管理模組的 RWD 顯示效果
+ */
+
+/* === 通用表單居中樣式 - 針對 XXL 螢幕特殊處理 === */
+.o_form_view.o_service_contract_responsive,
+.o_form_view.o_service_equipment_responsive {
+    
+    // XXL 螢幕時（Chatter 側邊模式）的表單居中
+    &.o_xxl_form_view {
+        .o_form_sheet_bg {
+            margin-left: auto !important;
+            margin-right: auto !important;
+            max-width: none; // 自適應寬度
+        }
+    }
+    
+    // 一般大螢幕的表單居中
+    .o_form_sheet_bg {
+        margin-left: auto;
+        margin-right: auto;
+        max-width: 1200px;
+    }
+}
+
+/* === 服務合約響應式佈局 === */
+.o_service_contract_responsive {
+    
+    /* 大螢幕優化 - 避免表單被擠到最左邊 */
+    @media (min-width: 1400px) {
+        .o_form_sheet_bg {
+            .o_form_sheet {
+                max-width: 1200px;
+                margin: 0 auto;
+            }
+        }
+        
+        /* 合約表單欄位優化 */
+        .o_form_view {
+            .o_group {
+                &.o_inner_group {
+                    > .o_wrap_field {
+                        > .o_cell_label {
+                            width: 150px;
+                            min-width: 120px;
+                        }
+                        
+                        > .o_cell {
+                            min-width: 200px;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    /* 中等螢幕 (平板) */
+    @media (min-width: 768px) and (max-width: 1399px) {
+        .o_form_sheet {
+            padding: 16px;
+        }
+        
+        .o_group {
+            flex-wrap: wrap;
+            
+            .o_group_col_6 {
+                flex: 0 0 50%;
+            }
+        }
+    }
+    
+    /* 小螢幕 (手機) */
+    @media (max-width: 767px) {
+        .o_form_sheet {
+            padding: 8px;
+        }
+        
+        .o_group {
+            .o_group_col_6 {
+                flex: 0 0 100%;
+            }
+        }
+        
+        /* 按鈕區域優化 */
+        .oe_button_box {
+            flex-wrap: wrap;
+            justify-content: center;
+            
+            .oe_stat_button {
+                min-width: 110px;
+                margin: 2px;
+                font-size: 12px;
+            }
+        }
+        
+        /* 狀態列優化 */
+        .o_statusbar_status {
+            .o_arrow_button {
+                font-size: 11px;
+                padding: 4px 8px;
+            }
+        }
+    }
+}
+
+/* === 合約基本資訊區域優化 === */
+.o_contract_basic_info {
+    @media (max-width: 768px) {
+        .o_group {
+            flex-direction: column;
+            
+            .o_group_col_6 {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+            
+            /* 合約類型特殊處理 */
+            .o_field_selection {
+                font-size: 16px;
+                padding: 8px;
+                border: 2px solid #e9ecef;
+                border-radius: 6px;
+            }
+            
+            /* 金額字段突出顯示 */
+            .o_field_monetary {
+                text-align: right;
+                font-weight: bold;
+                font-size: 18px;
+                color: #28a745;
+            }
+        }
+    }
+}
+
+/* === 合約日期資訊優化 === */
+.o_contract_dates {
+    @media (max-width: 768px) {
+        .o_field_date {
+            font-size: 14px;
+            text-align: center;
+            
+            /* 到期警告 */
+            &[name="end_date"] {
+                font-weight: bold;
+                
+                &.text-danger {
+                    color: #dc3545 !important;
+                }
+            }
+        }
+        
+        /* 天數計算字段 */
+        .o_field_integer {
+            &[name="days_to_expiry"] {
+                font-size: 16px;
+                font-weight: bold;
+                text-align: center;
+                
+                &.text-warning {
+                    color: #fd7e14 !important;
+                }
+            }
+        }
+    }
+}
+
+/* === 設備列表優化 === */
+.o_contract_equipment_list {
+    .o_list_view {
+        @media (max-width: 768px) {
+            font-size: 12px;
+            
+            .o_list_table {
+                .o_data_cell {
+                    padding: 4px 6px;
+                    
+                    /* 隱藏非必要欄位 */
+                    &:nth-child(n+4) {
+                        display: none;
+                    }
+                }
+                
+                /* 只保留設備名稱和狀態 */
+                .o_data_cell[data-name="name"],
+                .o_data_cell[data-name="status"] {
+                    display: table-cell !important;
+                }
+            }
+        }
+    }
+}
+
+/* === 設備管理響應式佈局 === */
+.o_service_equipment_responsive {
+    
+    /* 大螢幕優化 */
+    @media (min-width: 1400px) {
+        .o_form_sheet_bg {
+            .o_form_sheet {
+                max-width: 1200px;
+                margin: 0 auto;
+            }
+        }
+    }
+    
+    /* 設備資訊區塊優化 */
+    .o_equipment_info_groups {
+        @media (max-width: 768px) {
+            .o_group {
+                margin-bottom: 15px;
+                
+                .o_group_col_6 {
+                    width: 100%;
+                }
+                
+                /* 設備序號突出顯示 */
+                .o_field_char[name="name"] {
+                    font-size: 18px;
+                    font-weight: bold;
+                    text-align: center;
+                    padding: 10px;
+                    background-color: #f8f9fa;
+                    border-radius: 6px;
+                }
+                
+                /* 軟體版本 */
+                .o_field_char[name="software_version"] {
+                    font-family: monospace;
+                    font-size: 14px;
+                    background-color: #e9ecef;
+                    padding: 4px 8px;
+                    border-radius: 4px;
+                }
+                
+                /* 安裝地點 */
+                .o_field_char[name="installation_location"] {
+                    font-style: italic;
+                    color: #6c757d;
+                }
+            }
+        }
+    }
+}
+
+/* === 日期資訊網格優化 === */
+.o_equipment_dates_grid {
+    @media (max-width: 768px) {
+        .o_group {
+            .o_group_col_6 {
+                width: 100%;
+                margin-bottom: 8px;
+            }
+            
+            .o_field_date {
+                text-align: center;
+                padding: 6px;
+                border: 1px solid #dee2e6;
+                border-radius: 4px;
+                
+                /* 保固相關日期特殊顯示 */
+                &[name="warranty_start_date"],
+                &[name="warranty_end_date"] {
+                    background-color: #fff3cd;
+                    border-color: #ffeaa7;
+                }
+                
+                /* 維護相關日期 */
+                &[name="last_maintenance_date"],
+                &[name="next_maintenance_date"] {
+                    background-color: #d1ecf1;
+                    border-color: #bee5eb;
+                }
+            }
+        }
+    }
+}
+
+/* === Kanban 視圖優化 === */
+.o_kanban_view {
+    &.o_contract_kanban {
+        .o_kanban_record {
+            @media (max-width: 576px) {
+                margin: 4px;
+                
+                .oe_kanban_content {
+                    font-size: 13px;
+                    
+                    .o_kanban_record_title {
+                        font-size: 14px;
+                        line-height: 1.3;
+                    }
+                    
+                    .o_kanban_record_body {
+                        > div {
+                            margin-bottom: 3px;
+                            
+                            /* 到期警告強調 */
+                            &.text-danger {
+                                padding: 4px;
+                                background-color: #f8d7da;
+                                border-radius: 4px;
+                                font-weight: bold;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    &.o_equipment_kanban {
+        .o_kanban_record {
+            @media (max-width: 576px) {
+                margin: 4px;
+                
+                .oe_kanban_content {
+                    .o_kanban_record_title {
+                        font-size: 13px;
+                        line-height: 1.2;
+                    }
+                    
+                    /* 保固狀態指示 */
+                    .warranty_indicator {
+                        display: inline-block;
+                        padding: 2px 6px;
+                        border-radius: 12px;
+                        font-size: 10px;
+                        
+                        &.under_warranty {
+                            background-color: #d4edda;
+                            color: #155724;
+                        }
+                        
+                        &.warranty_expired {
+                            background-color: #f8d7da;
+                            color: #721c24;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+/* === 合約列表視圖優化 === */
+.o_list_view {
+    &.o_contract_list_responsive {
+        @media (max-width: 992px) {
+            .o_list_table {
+                /* 隱藏不重要的欄位 */
+                .o_data_cell[data-name="equipment_count"],
+                .o_data_cell[data-name="days_to_expiry"] {
+                    display: none;
+                }
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .o_list_table {
+                /* 只保留關鍵資訊 */
+                .o_data_cell:not([data-name="name"]):not([data-name="partner_id"]):not([data-name="state"]) {
+                    display: none;
+                }
+                
+                .o_data_cell[data-name="name"] {
+                    font-weight: bold;
+                    font-size: 14px;
+                }
+                
+                .o_data_cell[data-name="state"] {
+                    text-align: center;
+                    
+                    .badge {
+                        font-size: 10px;
+                        padding: 3px 6px;
+                    }
+                }
+            }
+        }
+    }
+}
+
+/* === 設備列表視圖優化 === */
+.o_list_view {
+    &.o_equipment_list_responsive {
+        @media (max-width: 768px) {
+            .o_list_table {
+                .o_data_cell:not([data-name="name"]):not([data-name="partner_id"]):not([data-name="status"]):not([data-name="is_under_warranty"]) {
+                    display: none;
+                }
+                
+                .o_data_cell[data-name="name"] {
+                    font-weight: bold;
+                    max-width: 150px;
+                    word-wrap: break-word;
+                }
+                
+                .o_data_cell[data-name="is_under_warranty"] {
+                    text-align: center;
+                    
+                    .fa-check {
+                        color: #28a745;
+                    }
+                    
+                    .fa-times {
+                        color: #dc3545;
+                    }
+                }
+            }
+        }
+    }
+}
+
+/* === 財務管理頁籤優化 === */
+.o_contract_finance {
+    @media (max-width: 768px) {
+        .o_group {
+            .o_group_col_6 {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+            
+            /* 金額欄位特殊處理 */
+            .o_field_monetary {
+                font-size: 16px;
+                font-weight: bold;
+                text-align: right;
+                padding: 8px;
+                border-radius: 4px;
+                
+                /* 不同類型金額的顏色 */
+                &[name="total_amount"] {
+                    background-color: #e8f5e8;
+                    border: 1px solid #c3e6c3;
+                }
+                
+                &[name="billed_amount"] {
+                    background-color: #fff3cd;
+                    border: 1px solid #ffeaa7;
+                }
+                
+                &[name="received_amount"] {
+                    background-color: #d4edda;
+                    border: 1px solid #c3e6cb;
+                }
+                
+                &[name="balance_amount"] {
+                    background-color: #f8d7da;
+                    border: 1px solid #f5c6cb;
+                }
+            }
+        }
+    }
+}
+
+/* === 搜尋面板優化 === */
+.o_search_panel {
+    @media (max-width: 768px) {
+        .o_search_panel_section {
+            .o_search_panel_section_header {
+                font-size: 14px;
+                padding: 8px 12px;
+                background-color: #f8f9fa;
+                border-bottom: 1px solid #dee2e6;
+            }
+            
+            .o_search_panel_field {
+                font-size: 12px;
+                padding: 6px 12px;
+                
+                &.o_search_panel_field_clicked {
+                    background-color: #e3f2fd;
+                    font-weight: bold;
+                }
+            }
+        }
+    }
+}

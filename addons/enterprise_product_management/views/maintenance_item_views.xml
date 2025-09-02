@@ -66,10 +66,12 @@
                         </page>
                     </notebook>
                 </sheet>
+                <!-- Chatter 隱藏不需要的功能
                 <div class="oe_chatter">
                     <field name="message_follower_ids"/>
                     <field name="message_ids"/>
                 </div>
+                -->
             </form>
         </field>
     </record>

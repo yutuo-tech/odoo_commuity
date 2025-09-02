@@ -1,0 +1,359 @@
+/*
+ * Medical Service Management - 響應式設計樣式
+ * 優化醫療服務管理模組的 RWD 顯示效果
+ */
+
+/* === 通用表單居中樣式 - 針對 XXL 螢幕特殊處理 === */
+.o_form_view.o_medical_service_responsive,
+.o_form_view.o_company_department_responsive,
+.o_form_view.o_company_contact_responsive {
+    
+    // XXL 螢幕時（Chatter 側邊模式）的表單居中
+    &.o_xxl_form_view {
+        .o_form_sheet_bg {
+            margin-left: auto !important;
+            margin-right: auto !important;
+            max-width: none !important; // 自適應寬度
+        }
+    }
+    
+    // 一般大螢幕的表單居中  
+    .o_form_sheet_bg {
+        margin-left: auto !important;
+        margin-right: auto !important;
+        max-width: 1200px !important;
+    }
+    
+    // 隱藏 Chatter（如果存在）
+    .oe_chatter {
+        display: none !important;
+    }
+}
+
+// 針對 res.partner 的額外樣式覆蓋
+.o_form_view.o_medical_service_responsive.o_xxl_form_view {
+    // 強制覆蓋任何可能的 partner 特殊樣式
+    .o_form_sheet_bg {
+        margin-left: auto !important;
+        margin-right: auto !important;
+        max-width: none !important;
+        width: auto !important;
+    }
+    
+    // 確保 Chatter 完全隱藏
+    .oe_chatter,
+    .o-mail-Form-chatter,
+    .o-mail-ChatterContainer {
+        display: none !important;
+    }
+}
+
+/* === 醫療服務響應式佈局 === */
+.o_medical_service_responsive {
+    
+    /* 大螢幕優化 - 避免表單被擠到最左邊 */
+    @media (min-width: 1400px) {
+        .o_form_sheet_bg {
+            .o_form_sheet {
+                max-width: 1200px;
+                margin: 0 auto;
+            }
+        }
+        
+        /* 客戶表單優化 */
+        .o_form_view {
+            .o_group {
+                &.o_inner_group {
+                    > .o_wrap_field {
+                        > .o_cell_label {
+                            width: 150px;
+                            min-width: 120px;
+                        }
+                        
+                        > .o_cell {
+                            min-width: 200px;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    /* 中等螢幕 (平板) */
+    @media (min-width: 768px) and (max-width: 1399px) {
+        .o_form_sheet {
+            padding: 16px;
+        }
+        
+        .o_group {
+            flex-wrap: wrap;
+            
+            .o_group_col_6 {
+                flex: 0 0 50%;
+            }
+        }
+    }
+    
+    /* 小螢幕 (手機) */
+    @media (max-width: 767px) {
+        .o_form_sheet {
+            padding: 8px;
+        }
+        
+        .o_group {
+            .o_group_col_6 {
+                flex: 0 0 100%;
+            }
+        }
+        
+        /* 統計按鈕優化 */
+        .oe_button_box {
+            flex-wrap: wrap;
+            justify-content: center;
+            
+            .oe_stat_button {
+                min-width: 100px;
+                margin: 2px;
+                font-size: 12px;
+            }
+        }
+    }
+}
+
+/* === 客戶列表視圖優化 === */
+.o_partner_list_medical {
+    @media (max-width: 992px) {
+        .o_list_table {
+            /* 隱藏非必要欄位 */
+            .o_data_cell[data-name="x_equipment_count"],
+            .o_data_cell[data-name="x_payment_method"] {
+                display: none;
+            }
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .o_list_table {
+            /* 只保留最重要的資訊 */
+            .o_data_cell:not([data-name="name"]):not([data-name="x_department_count"]):not([data-name="x_contact_count"]) {
+                display: none;
+            }
+            
+            .o_data_cell[data-name="name"] {
+                font-weight: bold;
+                font-size: 14px;
+            }
+            
+            .o_data_cell[data-name="x_department_count"],
+            .o_data_cell[data-name="x_contact_count"] {
+                text-align: center;
+                font-weight: bold;
+                color: #17a2b8;
+            }
+        }
+    }
+}
+
+/* === 部門架構管理優化 === */
+.o_department_management {
+    @media (max-width: 768px) {
+        .o_setting_box {
+            flex-direction: column;
+            
+            .o_setting_left_pane,
+            .o_setting_right_pane {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+            
+            .o_setting_right_pane {
+                .text-muted {
+                    font-size: 13px;
+                }
+            }
+        }
+        
+        /* 部門清單優化 */
+        .o_list_view {
+            .o_list_table {
+                font-size: 13px;
+                
+                .o_data_cell {
+                    padding: 6px 8px;
+                }
+            }
+        }
+    }
+}
+
+/* === 部門聯絡人視圖優化 === */
+.o_company_contact_responsive {
+    /* 大螢幕表單居中 */
+    @media (min-width: 1400px) {
+        .o_form_sheet_bg {
+            .o_form_sheet {
+                max-width: 1200px;
+                margin: 0 auto;
+            }
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .o_form_sheet {
+            .o_group {
+                .o_group_col_6 {
+                    width: 100%;
+                }
+                
+                .o_field_char,
+                .o_field_many2one {
+                    font-size: 14px;
+                    padding: 8px;
+                }
+                
+                .o_field_text {
+                    min-height: 80px;
+                    font-size: 14px;
+                }
+            }
+        }
+    }
+}
+
+/* === 部門表單優化 === */
+.o_company_department_responsive {
+    /* 大螢幕表單居中 */
+    @media (min-width: 1400px) {
+        .o_form_sheet_bg {
+            .o_form_sheet {
+                max-width: 1200px;
+                margin: 0 auto;
+            }
+        }
+    }
+    
+    .o_group {
+        @media (max-width: 768px) {
+            flex-direction: column;
+            
+            .o_group_col_6 {
+                width: 100%;
+            }
+            
+            /* 部門名稱特殊處理 */
+            .o_field_char[name="name"] {
+                font-size: 18px;
+                font-weight: bold;
+                padding: 10px;
+                border: 2px solid #e9ecef;
+                border-radius: 6px;
+            }
+            
+            /* 部門描述優化 */
+            .o_field_text {
+                min-height: 100px;
+                font-size: 14px;
+            }
+        }
+    }
+}
+
+/* === 搜尋面板優化 === */
+.o_search_panel {
+    @media (max-width: 768px) {
+        .o_search_panel_section {
+            .o_search_panel_section_header {
+                font-size: 14px;
+                padding: 8px 12px;
+                background-color: #f8f9fa;
+            }
+            
+            .o_search_panel_field {
+                font-size: 12px;
+                padding: 4px 8px;
+                
+                &.o_search_panel_field_clicked {
+                    background-color: #e3f2fd;
+                }
+            }
+        }
+    }
+}
+
+/* === 統計數字優化 === */
+.o_medical_stats {
+    @media (max-width: 576px) {
+        .o_stat_value {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        
+        .o_stat_info {
+            font-size: 11px;
+            text-align: center;
+        }
+    }
+}
+
+/* === 響應式表格通用樣式 === */
+.o_list_view.o_medical_responsive_table {
+    @media (max-width: 768px) {
+        .o_list_table {
+            .o_list_record_selector {
+                width: 30px;
+            }
+            
+            .o_data_row {
+                &:hover {
+                    background-color: #f8f9fa;
+                }
+            }
+            
+            .o_data_cell {
+                padding: 8px 4px;
+                font-size: 13px;
+                
+                /* 文字欄位自動換行 */
+                &[data-name*="name"] {
+                    word-wrap: break-word;
+                    max-width: 120px;
+                }
+            }
+        }
+        
+        /* 分頁器優化 */
+        .o_pager {
+            .o_pager_counter {
+                font-size: 12px;
+            }
+            
+            .o_pager_limit {
+                display: none;
+            }
+        }
+    }
+}
+
+/* === 彈出視窗優化 === */
+.modal {
+    @media (max-width: 768px) {
+        .modal-dialog {
+            margin: 10px;
+            max-width: calc(100% - 20px);
+            
+            .modal-content {
+                .modal-body {
+                    padding: 10px;
+                    
+                    .o_form_view {
+                        .o_group {
+                            .o_group_col_6 {
+                                width: 100%;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

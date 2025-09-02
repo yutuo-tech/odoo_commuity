@@ -41,6 +41,13 @@
         'views/maintenance_item_views.xml',
         'views/menus.xml',
     ],
+    'assets': {
+        'web.assets_backend': [
+            # 在表單控制器樣式之後載入，確保能覆蓋核心的 margin-right: auto
+            ('after', 'web/static/src/views/form/form_controller.scss', 
+             'enterprise_product_management/static/src/scss/product_responsive.scss'),
+        ],
+    },
     'demo': [],
     'installable': True,
     'application': True,

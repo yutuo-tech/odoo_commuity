@@ -1,0 +1,630 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- 主要表單視圖 -->
+    <record id="field_service_order_form_view" model="ir.ui.view">
+        <field name="name">服務工單表單</field>
+        <field name="model">field.service.order</field>
+        <field name="arch" type="xml">
+            <form string="服務工單" class="o_field_service_responsive">
+                <header>
+                    <!-- 狀態按鈕 -->
+                    <button name="action_schedule" type="object" string="排程" 
+                            class="oe_highlight" invisible="state not in ['draft']"/>
+                    <button name="action_assign" type="object" string="指派" 
+                            invisible="state not in ['scheduled']"/>
+                    <button name="action_start" type="object" string="開始" 
+                            class="oe_highlight" invisible="state not in ['assigned']"/>
+                    <button name="action_done" type="object" string="完成" 
+                            class="oe_highlight" invisible="state not in ['in_progress']"/>
+                    <button name="action_confirm" type="object" string="確認" 
+                            invisible="state not in ['done']"/>
+                    <button name="action_cancel" type="object" string="取消" 
+                            invisible="state in ['cancelled', 'confirmed']"/>
+                    <button name="action_reset_draft" type="object" string="重設為草稿" 
+                            invisible="state not in ['cancelled']"/>                    
+                    
+                    <!-- 客戶處理單按鈕 -->
+                    <button name="action_create_customer_service_sheet" type="object" 
+                            string="客戶處理單" class="oe_highlight"
+                            invisible="has_customer_service_sheet"
+                            help="建立客戶處理單"/>
+                    
+                    <!-- 狀態列 -->
+                    <field name="state" widget="statusbar" 
+                           statusbar_visible="draft,scheduled,assigned,in_progress,done,confirmed"/>
+                </header>
+                
+                <!-- 標題區域 -->
+                <div class="oe_title">
+                    <h1>
+                        <field name="name" readonly="1"/>
+                    </h1>
+                </div>
+                
+                <!-- 智能按鈕區域 -->
+                <div class="oe_button_box o_field_service_button_box" name="button_box">                    
+                    <button name="action_view_customer_service_sheet" type="object" 
+                            class="oe_stat_button" icon="fa-file-o"
+                            invisible="not has_customer_service_sheet">
+                        <span>客戶處理單</span>
+                    </button>
+                </div>
+                
+                <!-- 主要內容區域 -->
+                <sheet>
+                    <div class="row">
+                        <div class="col-12 col-md-6">
+                            <group name="order_info" string="工單基本資訊">
+                                <field name="order_type" widget="radio" options="{'horizontal': true}"/>
+                                <field name="priority" widget="priority"/>
+                                <field name="partner_id" context="{'res_partner_search_mode': 'customer'}"/>
+                                <field name="department_id" 
+                                       domain="[('company_id', '=', partner_id)]"
+                                       invisible="not partner_id"/>
+                                <field name="contact_id" 
+                                       domain="[('company_id', '=', partner_id)]"
+                                       invisible="not partner_id"/>
+                                <field name="company_id" groups="base.group_multi_company"/>
+                                <field name="has_customer_service_sheet" invisible="1"/>
+                            </group>
+                        </div>
+                        
+                        <div class="col-12 col-md-6">
+                            <group name="dates" string="時間資訊">
+                                <field name="date"/>
+                                <field name="scheduled_date"/>
+                                <field name="start_date"/>
+                                <field name="end_date"/>
+                                <field name="actual_hours" readonly="1" string="實際工時(小時)"/>
+                            </group>
+                        </div>
+                    </div>
+                    
+                    <!-- 設備和服務類型區域 -->
+                    <div class="row">
+                        <div class="col-12">
+                            <group string="設備和服務資訊" class="o_field_service_equipment">
+                                <div class="row">
+                                    <div class="col-12 col-lg-8">
+                                        <group name="equipment_info">
+                                            <field name="equipment_id"/>
+                                            <field name="product_variant_id" string="設備型號"/>
+                                            <field name="serial_number"/>
+                                            <field name="software_version"/>
+                                            <field name="unit_number"/>
+                                            <field name="hospital_asset_number"/>
+                                            <field name="installation_location"/>
+                                            <field name="contract_type" readonly="1"/>
+                                            <field name="contract_code" readonly="1"/>
+                                            
+                                            <!-- 保養工單特有欄位 -->
+                                            <field name="maintenance_type" 
+                                                   invisible="order_type != 'maintenance'"
+                                                   required="order_type == 'maintenance'"/>
+                                            <field name="last_maintenance_date" 
+                                                   invisible="order_type != 'maintenance'"/>
+                                            <field name="next_maintenance_date" 
+                                                   invisible="order_type != 'maintenance'"/>
+                                            
+                                            <!-- 維修工單特有欄位 -->
+                                            <field name="failure_symptom" 
+                                                   invisible="order_type != 'repair'"/>
+                                            <field name="repair_urgency" 
+                                                   invisible="order_type != 'repair'"/>
+                                        </group>
+                                    </div>
+                                    
+                                    <div class="col-12 col-lg-4">
+                                        <group name="assignment">
+                                            <field name="technician_id" required="1"/>
+                                            <field name="team_id"/>
+                                            <field name="estimated_duration"/>
+                                            <field name="actual_duration" invisible="state in ['draft', 'scheduled', 'assigned']"/>
+                                        </group>
+                                    </div>
+                                </div>
+                            </group>
+                        </div>
+                    </div>
+                    
+                    <!-- 工作描述 -->
+                    <group string="工作內容">
+                        <field name="description" nolabel="1" placeholder="請描述工作內容..."/>
+                        <field name="work_summary" nolabel="1" placeholder="工作總結..." 
+                               invisible="state in ['draft', 'scheduled', 'assigned']"/>
+                    </group>
+                    
+                    <!-- 維修工單詳細資訊 -->
+                    <group string="維修資訊" invisible="order_type != 'repair'">
+                        <group name="repair_details">
+                            <field name="problem_description" nolabel="1" placeholder="問題描述..."/>
+                        </group>
+                        <group name="repair_solution">
+                            <field name="solution_description" nolabel="1" placeholder="處理方案..."/>
+                        </group>
+                    </group>
+                    
+                    
+                    <!-- 工作日誌專用欄位 -->
+                    <group string="工作性質" invisible="order_type != 'work_log'">
+                        <group name="work_nature">
+                            <field name="work_nature_main" 
+                                   help="下拉式選擇主項"/>
+                            <field name="work_nature_sub" 
+                                   help="主項選擇拜訪後，次項出現醫師拜訪、採購拜訪"/>
+                        </group>
+                        <group name="work_contacts">
+                            <field name="customer_contact_ids" 
+                                   widget="many2many_tags"
+                                   help="可以多選，僅出現該科室人員選項"/>
+                        </group>
+                    </group>
+                    
+                    <!-- 紀錄內容 -->
+                    <group string="紀錄內容" invisible="order_type != 'work_log'">
+                        <field name="record_content" nolabel="1" 
+                               placeholder="手寫輸入，字數希望可達1000字..."/>
+                    </group>
+                    
+                    <!-- 標籤 -->
+                    <group string="關聯標籤">
+                        <field name="tag_ids" widget="many2many_tags" 
+                               placeholder="選擇標籤..."/>
+                    </group>
+                    
+                    <!-- 筆記本頁籤 -->
+                    <notebook>
+                        <!-- 檢查清單頁籤 -->
+                        <page string="檢查清單" name="checklist" 
+                              invisible="order_type != 'maintenance'" class="o_field_service_checklist">
+                            <!-- 保養項目清單 - 暫時註解，待模組載入後再啟用
+                            <group string="保養項目" invisible="order_type != 'maintenance'">
+                                <field name="maintenance_item_ids" nolabel="1" readonly="1">
+                                    <list>
+                                        <field name="name"/>
+                                        <field name="maintenance_type"/>
+                                        <field name="key_points"/>
+                                        <field name="price"/>
+                                        <field name="currency"/>
+                                    </list>
+                                </field>
+                            </group>
+                            -->
+                            
+                            <!-- 檢查清單 -->
+                            <group string="檢查清單">
+                                <field name="checklist_line_ids" nolabel="1">
+                                    <list editable="bottom">
+                                        <field name="name"/>
+                                        <field name="key_points" optional="hide"/>
+                                        <field name="description" optional="show"/>
+                                        <field name="is_checked" widget="boolean_toggle"/>
+                                        <field name="notes" optional="show"/>
+                                        <field name="show_on_report" widget="boolean_toggle" optional="hide"/>
+                                    </list>
+                                </field>
+                            </group>
+                            
+                            <div class="oe_clear">
+                                <button name="action_load_maintenance_checklist" type="object" 
+                                        string="載入保養檢查清單" class="btn-secondary"
+                                        invisible="order_type != 'maintenance' or not equipment_id"/>
+                                <button name="action_load_repair_checklist" type="object" 
+                                        string="載入維修檢查清單" class="btn-secondary"
+                                        invisible="order_type != 'repair' or not equipment_id"/>
+                            </div>
+                        </page>
+                        
+                        <!-- 費用頁籤 -->
+                        <page string="費用記錄" name="expenses" class="o_field_service_expenses">
+                            <field name="expense_ids">
+                                <list editable="bottom">
+                                    <field name="expense_type"/>
+                                    <field name="description"/>
+                                    <field name="amount"/>
+                                    <field name="currency_id" optional="hide"/>
+                                </list>
+                            </field>
+                            
+                            <group string="費用總計" class="oe_subtotal_footer oe_right">
+                                <field name="total_expense" readonly="1" class="oe_subtotal_footer_separator"/>
+                            </group>
+                        </page>
+                        
+                        <!-- 零件更換頁籤 -->
+                        <page string="零件更換" name="part_replacements" 
+                              invisible="order_type != 'repair'">
+                            <field name="part_replacement_ids">
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="material_category_id"/>
+                                    <field name="product_id" 
+                                           domain="[('x_material_category_ids', 'in', [material_category_id])]"/>
+                                    <field name="quantity"/>
+                                    <field name="notes"/>
+                                </list>
+                            </field>
+                        </page>
+                        
+                        <!-- 維修問題頁籤 -->
+                        <page string="維修問題" name="repair_problems" 
+                              invisible="order_type != 'repair'">
+                            <field name="repair_problem_ids">
+                                <list editable="bottom">
+                                    <field name="name"/>
+                                    <field name="description"/>
+                                    <field name="material_id"/>
+                                    <field name="repair_type"/>
+                                    <field name="price" readonly="1"/>
+                                    <field name="currency" readonly="1"/>
+                                </list>
+                            </field>
+                        </page>
+                        
+                        <!-- 附件頁籤 -->
+                        <page string="附件" name="attachments">
+                            <field name="attachment_ids" widget="many2many_binary"/>
+                        </page>
+                    </notebook>
+                    
+                    <!-- 工作日誌特殊區域 -->
+                    <div invisible="order_type != 'work_log'" class="o_field_service_work_log">
+                        <separator string="工作日誌詳情"/>
+                        <div class="row">
+                            <div class="col-12 col-md-6">
+                                <group>
+                                    <field name="work_category"/>
+                                    <field name="work_hours"/>
+                                </group>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <group>
+                                    <field name="work_location"/>
+                                    <field name="weather_condition"/>
+                                </group>
+                            </div>
+                        </div>
+                        <field name="daily_work_summary" placeholder="今日工作內容詳述..."/>
+                    </div>
+                </sheet>
+                
+                <!-- Chatter 訊息追蹤 - 隱藏不需要的功能
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+                -->
+            </form>
+        </field>
+    </record>
+
+    <!-- 列表視圖 -->
+    <record id="field_service_order_list_view" model="ir.ui.view">
+        <field name="name">服務工單列表</field>
+        <field name="model">field.service.order</field>
+        <field name="arch" type="xml">
+            <list string="服務工單" sample="1" multi_edit="1">
+                <field name="name" readonly="1"/>
+                <field name="order_type"/>
+                <field name="partner_id"/>
+                <field name="technician_id"/>
+                <field name="equipment_id"/>
+                <field name="date"/>
+                <field name="scheduled_date" optional="show"/>
+                <field name="priority" widget="priority" optional="show"/>
+                <field name="state" decoration-success="state=='confirmed'" 
+                       decoration-info="state in ['scheduled','assigned']"
+                       decoration-warning="state=='in_progress'" 
+                       decoration-muted="state=='cancelled'"
+                       widget="badge"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- 搜尋視圖 -->
+    <record id="field_service_order_search_view" model="ir.ui.view">
+        <field name="name">服務工單搜尋</field>
+        <field name="model">field.service.order</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="partner_id"/>
+                <field name="technician_id"/>
+                <field name="equipment_id"/>
+                <field name="serial_number"/>
+                
+                <!-- 快速篩選器 -->
+                <filter string="我的工單" name="my_orders" 
+                        domain="[('technician_id.user_id', '=', uid)]"/>
+                <filter string="今日工單" name="today_orders" 
+                        domain="[('date', '=', context_today().strftime('%Y-%m-%d'))]"/>
+                <!-- 暫時移除本週工單篩選器，因為 datetime 運算在 XML 中有問題 -->
+                <filter string="未完成" name="not_done" 
+                        domain="[('state', 'not in', ['done', 'confirmed', 'cancelled'])]"/>
+                <filter string="高優先級" name="high_priority" 
+                        domain="[('priority', 'in', ['2', '3'])]"/>
+                
+                <separator/>
+                
+                <!-- 工單類型篩選 -->
+                <filter string="保養工單" name="maintenance_orders" 
+                        domain="[('order_type', '=', 'maintenance')]"/>
+                <filter string="維修工單" name="repair_orders" 
+                        domain="[('order_type', '=', 'repair')]"/>
+                <filter string="工作日誌" name="work_logs" 
+                        domain="[('order_type', '=', 'work_log')]"/>
+                
+                <separator/>
+                
+                <!-- 狀態篩選 -->
+                <filter string="草稿" name="draft_orders" 
+                        domain="[('state', '=', 'draft')]"/>
+                <filter string="已排程" name="scheduled_orders" 
+                        domain="[('state', '=', 'scheduled')]"/>
+                <filter string="已指派" name="assigned_orders" 
+                        domain="[('state', '=', 'assigned')]"/>
+                <filter string="進行中" name="in_progress_orders" 
+                        domain="[('state', '=', 'in_progress')]"/>
+                <filter string="已完成" name="done_orders" 
+                        domain="[('state', '=', 'done')]"/>
+                
+                <separator/>
+                
+                <filter string="已封存" name="inactive" domain="[('active', '=', False)]"/>
+                
+                <!-- 分組 -->
+                <group expand="0" string="Group By">
+                    <filter string="工單類型" name="group_by_type" 
+                            context="{'group_by': 'order_type'}"/>
+                    <filter string="狀態" name="group_by_state" 
+                            context="{'group_by': 'state'}"/>
+                    <filter string="技術人員" name="group_by_technician" 
+                            context="{'group_by': 'technician_id'}"/>
+                    <filter string="客戶" name="group_by_partner" 
+                            context="{'group_by': 'partner_id'}"/>
+                    <filter string="設備" name="group_by_equipment" 
+                            context="{'group_by': 'equipment_id'}"/>
+                    <filter string="日期" name="group_by_date" 
+                            context="{'group_by': 'date:month'}"/>
+                    <filter string="優先級" name="group_by_priority" 
+                            context="{'group_by': 'priority'}"/>
+                    <filter string="公司" name="group_by_company" 
+                            context="{'group_by': 'company_id'}" 
+                            groups="base.group_multi_company"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Kanban 視圖 -->
+    <record id="field_service_order_kanban_view" model="ir.ui.view">
+        <field name="name">服務工單看板</field>
+        <field name="model">field.service.order</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="state" class="o_kanban_small_column o_opportunity_kanban o_field_service_kanban" 
+                    sample="1" quick_create="false">
+                <field name="id"/>
+                <field name="name"/>
+                <field name="order_type"/>
+                <field name="partner_id"/>
+                <field name="technician_id"/>
+                <field name="equipment_id"/>
+                <field name="date"/>
+                <field name="scheduled_date"/>
+                <field name="priority"/>
+                <field name="state"/>
+                <field name="color"/>
+                <field name="activity_ids"/>
+                <field name="activity_state"/>
+                
+                <!-- 漸進色彩設定 -->
+                <progressbar field="activity_state" colors='{"planned": "success", "today": "warning", "overdue": "danger"}'/>
+                
+                <templates>
+                    <!-- Kanban 卡片模板 -->
+                    <t t-name="card">
+                        <div t-attf-class="#{!selection_mode ? kanban_color(record.color.raw_value) : ''} oe_kanban_global_click">
+                            <div class="o_kanban_record_top mb16">
+                                <div class="o_kanban_record_headings">
+                                    <strong class="o_kanban_record_title">
+                                        <t t-esc="record.name.value"/>
+                                    </strong>
+                                </div>
+                                
+                                <!-- 優先級星號 -->
+                                <div class="o_kanban_record_badges">
+                                    <t t-if="record.priority.raw_value == '3'">
+                                        <span class="fa fa-star text-warning" title="高優先級"/>
+                                    </t>
+                                    <t t-if="record.priority.raw_value == '2'">
+                                        <span class="fa fa-star-half-o text-warning" title="中優先級"/>
+                                    </t>
+                                </div>
+                            </div>
+                            
+                            <div class="o_kanban_record_body">
+                                <!-- 工單類型標籤 -->
+                                <div class="mb8">
+                                    <t t-if="record.order_type.raw_value == 'maintenance'">
+                                        <span class="badge badge-info">保養工單</span>
+                                    </t>
+                                    <t t-if="record.order_type.raw_value == 'repair'">
+                                        <span class="badge badge-warning">維修工單</span>
+                                    </t>
+                                    <t t-if="record.order_type.raw_value == 'work_log'">
+                                        <span class="badge badge-secondary">工作日誌</span>
+                                    </t>
+                                </div>
+                                
+                                <!-- 客戶資訊 -->
+                                <div class="text-muted">
+                                    <i class="fa fa-user" title="客戶"/> <t t-esc="record.partner_id.value"/>
+                                </div>
+                                
+                                <!-- 設備資訊 -->
+                                <t t-if="record.equipment_id.raw_value">
+                                    <div class="text-muted">
+                                        <i class="fa fa-cog" title="設備"/> <t t-esc="record.equipment_id.value"/>
+                                    </div>
+                                </t>
+                                
+                                <!-- 技術人員 -->
+                                <div class="text-muted">
+                                    <i class="fa fa-wrench" title="技術人員"/> <t t-esc="record.technician_id.value"/>
+                                </div>
+                                
+                                <!-- 日期資訊 -->
+                                <div class="text-muted mt8">
+                                    <i class="fa fa-calendar" title="日期"/>
+                                    <t t-if="record.scheduled_date.raw_value">
+                                        排程：<t t-esc="record.scheduled_date.value"/>
+                                    </t>
+                                    <t t-else="">
+                                        建立：<t t-esc="record.date.value"/>
+                                    </t>
+                                </div>
+                            </div>
+                            
+                            <div class="o_kanban_record_bottom">
+                                <div class="oe_kanban_bottom_left">
+                                    <!-- 活動指示器 -->
+                                    <div class="o_kanban_inline_block">
+                                        <field name="activity_ids" widget="kanban_activity"/>
+                                    </div>
+                                </div>
+                                
+                                <div class="oe_kanban_bottom_right">
+                                    <!-- 技術人員頭像 -->
+                                    <t t-if="record.technician_id.raw_value">
+                                        <img t-att-src="'/web/image/hr.employee/' + record.technician_id.raw_value + '/avatar_128'" 
+                                             t-att-title="record.technician_id.value" t-att-alt="record.technician_id.value" 
+                                             class="oe_kanban_avatar"/>
+                                    </t>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                    
+                    <!-- Kanban 選單模板 -->
+                    <t t-name="menu">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-6 o_kanban_card_manage_section o_kanban_manage_view">
+                                    <h5>檢視</h5>
+                                    <div>
+                                        <a name="action_view_expenses" type="object">費用記錄</a>
+                                    </div>
+                                    <div>
+                                        <a name="action_view_part_replacements" type="object">零件更換</a>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-6 o_kanban_card_manage_section o_kanban_manage_new">
+                                    <h5>操作</h5>                                   
+                                    <div t-if="record.state.raw_value in ['done', 'confirmed']">
+                                        <a name="action_generate_customer_report" type="object">生成客戶報表</a>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="o_kanban_card_manage_settings row">
+                                <div class="col-8">
+                                    <ul class="oe_kanban_colorpicker" data-field="color"/>
+                                </div>
+                                <div class="col-4 text-end">
+                                    <a type="edit">編輯</a>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- 行動條目 (Actions) -->
+    <record id="field_service_order_action" model="ir.actions.act_window">
+        <field name="name">服務工單</field>
+        <field name="res_model">field.service.order</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="search_view_id" ref="field_service_order_search_view"/>
+        <field name="context">{
+            'search_default_my_orders': 1,
+            'search_default_not_done': 1
+        }</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                建立您的第一個服務工單
+            </p>
+            <p>
+                管理保養工單、維修工單和工作日誌。追蹤設備維護狀況，記錄費用和零件更換。
+            </p>
+        </field>
+    </record>
+
+    <!-- 不同類型的工單動作 -->
+    <record id="maintenance_order_action" model="ir.actions.act_window">
+        <field name="name">保養工單</field>
+        <field name="res_model">field.service.order</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="domain">[('order_type', '=', 'maintenance')]</field>
+        <field name="context">{
+            'default_order_type': 'maintenance',
+            'search_default_not_done': 1
+        }</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                建立保養工單
+            </p>
+            <p>
+                管理設備定期保養，確保設備正常運作並延長使用壽命。
+                系統會自動載入相應的保養檢查清單。
+            </p>
+        </field>
+    </record>
+
+    <record id="repair_order_action" model="ir.actions.act_window">
+        <field name="name">維修工單</field>
+        <field name="res_model">field.service.order</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="domain">[('order_type', '=', 'repair')]</field>
+        <field name="context">{
+            'default_order_type': 'repair',
+            'search_default_not_done': 1
+        }</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                建立維修工單
+            </p>
+            <p>
+                處理設備故障和維修需求。記錄故障症狀、更換零件，
+                並透過問題庫快速找到解決方案。
+            </p>
+        </field>
+    </record>
+
+    <record id="work_log_action" model="ir.actions.act_window">
+        <field name="name">工作日誌</field>
+        <field name="res_model">field.service.order</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="domain">[('order_type', '=', 'work_log')]</field>
+        <field name="context">{
+            'default_order_type': 'work_log',
+            'search_default_not_done': 1
+        }</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                建立工作日誌
+            </p>
+            <p>
+                記錄日常工作內容和活動。追蹤工作時間、地點和完成情況，
+                建立完整的工作記錄。
+            </p>
+        </field>
+    </record>
+
+
+</odoo>
