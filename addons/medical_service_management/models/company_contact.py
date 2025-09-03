@@ -19,6 +19,33 @@ class CompanyContact(models.Model):
     _description = '聯絡人'
     _order = 'company_id, department_id, name'
     _rec_name = 'display_name'
+    
+    # 明確禁用 mail 功能  
+    _mail_post_access = 'read'
+    
+    # 明確定義 mail 相關欄位為空 - 防止視圖錯誤
+    message_follower_ids = fields.Many2many(
+        'mail.followers', string='Followers',
+        compute='_compute_empty_mail_fields', 
+        store=False, readonly=True
+    )
+    activity_ids = fields.One2many(
+        'mail.activity', 'res_id', string='Activities',
+        compute='_compute_empty_mail_fields',
+        store=False, readonly=True
+    )
+    message_ids = fields.One2many(
+        'mail.message', 'res_id', string='Messages',
+        compute='_compute_empty_mail_fields',
+        store=False, readonly=True
+    )
+    
+    def _compute_empty_mail_fields(self):
+        """計算空的 mail 欄位"""
+        for record in self:
+            record.message_follower_ids = [(5, 0, 0)]
+            record.activity_ids = [(5, 0, 0)]
+            record.message_ids = [(5, 0, 0)]
 
     # === 基本個人資訊 ===
     name = fields.Char(

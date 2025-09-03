@@ -66,27 +66,27 @@
               name="設定" 
               parent="menu_service_contract_management"
               sequence="30"
-              groups="service_contract_management.group_service_admin"/>
+              groups="service_contract_management.group_service_manager"/>
 
     <menuitem id="menu_maintenance_checklist" 
               name="保養檢查項目"
               action="action_maintenance_checklist"
               parent="menu_service_settings_root"
               sequence="10"
-              groups="service_contract_management.group_service_admin"/>
+              groups="service_contract_management.group_service_manager"/>
 
     <menuitem id="menu_maintenance_checklist_routine" 
               name="例行保養項目"
               action="action_maintenance_checklist_routine"
               parent="menu_service_settings_root"
               sequence="20"
-              groups="service_contract_management.group_service_admin"/>
+              groups="service_contract_management.group_service_manager"/>
 
     <menuitem id="menu_maintenance_checklist_required" 
               name="必要檢查項目"
               action="action_maintenance_checklist_required"
               parent="menu_service_settings_root"
               sequence="30"
-              groups="service_contract_management.group_service_admin"/>
+              groups="service_contract_management.group_service_manager"/>
 
 </odoo>

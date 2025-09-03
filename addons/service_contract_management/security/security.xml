@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <data noupdate="1">
+    <data noupdate="0">
 
         <!-- 服務合約管理分類 -->
         <record id="category_service_contract" model="ir.module.category">
@@ -9,46 +9,52 @@
             <field name="sequence">10</field>
         </record>
 
-        <!-- 使用者群組 -->
-        <record id="group_service_user" model="res.groups">
-            <field name="name">服務使用者</field>
+        <!-- 唯讀群組 (顯示在下拉選單) -->
+        <record id="group_service_readonly" model="res.groups">
+            <field name="name">唯讀</field>
             <field name="category_id" ref="category_service_contract"/>
             <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
-            <field name="comment">可以查看設備和合約資訊</field>
+            <field name="comment">可查看所有合約和設備資料，完全唯讀權限</field>
         </record>
 
-        <record id="group_service_equipment_manager" model="res.groups">
-            <field name="name">設備管理員</field>
+        <!-- 使用者群組 (顯示在下拉選單) -->
+        <record id="group_service_user" model="res.groups">
+            <field name="name">使用者</field>
+            <field name="category_id" ref="category_service_contract"/>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+            <field name="comment">可以建立和修改設備、合約資訊</field>
+        </record>
+
+        <!-- 管理員群組 (顯示在下拉選單) -->
+        <record id="group_service_manager" model="res.groups">
+            <field name="name">管理員</field>
             <field name="category_id" ref="category_service_contract"/>
             <field name="implied_ids" eval="[(4, ref('group_service_user'))]"/>
-            <field name="comment">可以管理設備資訊和狀態</field>
-        </record>
-
-        <record id="group_service_contract_manager" model="res.groups">
-            <field name="name">合約管理員</field>
-            <field name="category_id" ref="category_service_contract"/>
-            <field name="implied_ids" eval="[(4, ref('group_service_user'))]"/>
-            <field name="comment">可以管理服務合約</field>
-        </record>
-
-        <record id="group_service_admin" model="res.groups">
-            <field name="name">服務系統管理員</field>
-            <field name="category_id" ref="category_service_contract"/>
-            <field name="implied_ids" eval="[(4, ref('group_service_equipment_manager')), (4, ref('group_service_contract_manager'))]"/>
-            <field name="comment">完整的服務管理權限，包括保養項目設定</field>
+            <field name="comment">可以完整管理所有服務合約和設備資料</field>
         </record>
 
         <!-- 記錄規則 -->
         
         <!-- 設備存取規則 -->
+        <record id="service_equipment_rule_readonly" model="ir.rule">
+            <field name="name">設備：唯讀</field>
+            <field name="model_id" ref="model_service_equipment"/>
+            <field name="domain_force">[(1,'=',1)]</field>
+            <field name="groups" eval="[(4,ref('group_service_readonly'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
         <record id="service_equipment_rule_user" model="ir.rule">
-            <field name="name">設備：使用者只能查看</field>
+            <field name="name">設備：使用者可編輯</field>
             <field name="model_id" ref="model_service_equipment"/>
             <field name="domain_force">[(1,'=',1)]</field>
             <field name="groups" eval="[(4,ref('group_service_user'))]"/>
             <field name="perm_read" eval="True"/>
-            <field name="perm_write" eval="False"/>
-            <field name="perm_create" eval="False"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
             <field name="perm_unlink" eval="False"/>
         </record>
 
@@ -56,7 +62,7 @@
             <field name="name">設備：管理員完全存取</field>
             <field name="model_id" ref="model_service_equipment"/>
             <field name="domain_force">[(1,'=',1)]</field>
-            <field name="groups" eval="[(4,ref('group_service_equipment_manager'))]"/>
+            <field name="groups" eval="[(4,ref('group_service_manager'))]"/>
             <field name="perm_read" eval="True"/>
             <field name="perm_write" eval="True"/>
             <field name="perm_create" eval="True"/>
@@ -64,14 +70,25 @@
         </record>
 
         <!-- 合約存取規則 -->
+        <record id="service_contract_rule_readonly" model="ir.rule">
+            <field name="name">合約：唯讀</field>
+            <field name="model_id" ref="model_service_contract"/>
+            <field name="domain_force">[(1,'=',1)]</field>
+            <field name="groups" eval="[(4,ref('group_service_readonly'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
         <record id="service_contract_rule_user" model="ir.rule">
-            <field name="name">合約：使用者只能查看</field>
+            <field name="name">合約：使用者可編輯</field>
             <field name="model_id" ref="model_service_contract"/>
             <field name="domain_force">[(1,'=',1)]</field>
             <field name="groups" eval="[(4,ref('group_service_user'))]"/>
             <field name="perm_read" eval="True"/>
-            <field name="perm_write" eval="False"/>
-            <field name="perm_create" eval="False"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
             <field name="perm_unlink" eval="False"/>
         </record>
 
@@ -79,7 +96,7 @@
             <field name="name">合約：管理員完全存取</field>
             <field name="model_id" ref="model_service_contract"/>
             <field name="domain_force">[(1,'=',1)]</field>
-            <field name="groups" eval="[(4,ref('group_service_contract_manager'))]"/>
+            <field name="groups" eval="[(4,ref('group_service_manager'))]"/>
             <field name="perm_read" eval="True"/>
             <field name="perm_write" eval="True"/>
             <field name="perm_create" eval="True"/>
@@ -87,22 +104,33 @@
         </record>
 
         <!-- 保養檢查項目存取規則 -->
-        <record id="maintenance_checklist_rule_user" model="ir.rule">
-            <field name="name">檢查項目：使用者只能查看</field>
+        <record id="maintenance_checklist_rule_readonly" model="ir.rule">
+            <field name="name">檢查項目：唯讀</field>
             <field name="model_id" ref="model_maintenance_checklist"/>
             <field name="domain_force">[(1,'=',1)]</field>
-            <field name="groups" eval="[(4,ref('group_service_user'))]"/>
+            <field name="groups" eval="[(4,ref('group_service_readonly'))]"/>
             <field name="perm_read" eval="True"/>
             <field name="perm_write" eval="False"/>
             <field name="perm_create" eval="False"/>
             <field name="perm_unlink" eval="False"/>
         </record>
 
-        <record id="maintenance_checklist_rule_admin" model="ir.rule">
+        <record id="maintenance_checklist_rule_user" model="ir.rule">
+            <field name="name">檢查項目：使用者可編輯</field>
+            <field name="model_id" ref="model_maintenance_checklist"/>
+            <field name="domain_force">[(1,'=',1)]</field>
+            <field name="groups" eval="[(4,ref('group_service_user'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <record id="maintenance_checklist_rule_manager" model="ir.rule">
             <field name="name">檢查項目：管理員完全存取</field>
             <field name="model_id" ref="model_maintenance_checklist"/>
             <field name="domain_force">[(1,'=',1)]</field>
-            <field name="groups" eval="[(4,ref('group_service_admin'))]"/>
+            <field name="groups" eval="[(4,ref('group_service_manager'))]"/>
             <field name="perm_read" eval="True"/>
             <field name="perm_write" eval="True"/>
             <field name="perm_create" eval="True"/>
