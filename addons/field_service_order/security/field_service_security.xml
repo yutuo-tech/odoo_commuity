@@ -27,13 +27,21 @@
         <field name="comment">可以管理所有服務工單，配置系統設定和檢視報表</field>
     </record>
 
+    <!-- 唯讀群組 -->
+    <record id="group_field_service_viewer" model="res.groups">
+        <field name="name">現場服務唯讀</field>
+        <field name="category_id" ref="base.module_category_services_field_service"/>
+        <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+        <field name="comment">可以查看所有服務工單和相關資料，但無法進行任何修改操作</field>
+    </record>
+
     <!-- 記錄規則 (Row-level Security) -->
     
-    <!-- 服務工單記錄規則 - 所有員工基於階層關係的權限控制 -->
+    <!-- 服務工單記錄規則 - 所有員工基於階層關係的權限控制（排除唯讀群組） -->
     <record id="rule_field_service_order_employee" model="ir.rule">
         <field name="name">服務工單：員工階層權限</field>
         <field name="model_id" ref="model_field_service_order"/>
-        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="groups" eval="[(4, ref('group_field_service_user')), (4, ref('group_field_service_technician')), (4, ref('group_field_service_manager'))]"/>
         <field name="domain_force">[
             '|', '|', '|',
                 ('create_uid', '=', user.id),
@@ -47,11 +55,11 @@
         <field name="perm_unlink" eval="False"/>
     </record>
 
-    <!-- 客戶處理單記錄規則 - 基於員工階層關係 -->
+    <!-- 客戶處理單記錄規則 - 基於員工階層關係（排除唯讀群組） -->
     <record id="rule_customer_service_sheet_employee" model="ir.rule">
         <field name="name">客戶處理單：員工階層權限</field>
         <field name="model_id" ref="model_customer_service_sheet"/>
-        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="groups" eval="[(4, ref('group_field_service_user')), (4, ref('group_field_service_technician')), (4, ref('group_field_service_manager'))]"/>
         <field name="domain_force">[
             '|', '|', '|',
                 ('create_uid', '=', user.id),
@@ -113,11 +121,23 @@
         <field name="perm_unlink" eval="True"/>
     </record>
 
-    <!-- 檢查清單記錄規則 - 基於員工階層關係 -->
+    <!-- 服務工單記錄規則 - 唯讀可以看到所有工單但只能讀取 -->
+    <record id="rule_field_service_order_viewer" model="ir.rule">
+        <field name="name">服務工單：唯讀</field>
+        <field name="model_id" ref="model_field_service_order"/>
+        <field name="groups" eval="[(4, ref('group_field_service_viewer'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <!-- 檢查清單記錄規則 - 基於員工階層關係（排除唯讀群組） -->
     <record id="rule_field_service_checklist_employee" model="ir.rule">
         <field name="name">檢查清單：員工階層權限</field>
         <field name="model_id" ref="model_field_service_checklist_line"/>
-        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="groups" eval="[(4, ref('group_field_service_user')), (4, ref('group_field_service_technician')), (4, ref('group_field_service_manager'))]"/>
         <field name="domain_force">[
             '|', '|', '|',
                 ('order_id.create_uid', '=', user.id),
@@ -142,11 +162,11 @@
         <field name="active" eval="False"/>
     </record>
 
-    <!-- 費用記錄規則 - 基於員工階層關係 -->
+    <!-- 費用記錄規則 - 基於員工階層關係（排除唯讀群組） -->
     <record id="rule_field_service_expense_employee" model="ir.rule">
         <field name="name">費用記錄：員工階層權限</field>
         <field name="model_id" ref="model_field_service_expense"/>
-        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="groups" eval="[(4, ref('group_field_service_user')), (4, ref('group_field_service_technician')), (4, ref('group_field_service_manager'))]"/>
         <field name="domain_force">[
             '|', '|',
                 ('order_id.technician_id.user_id', '=', user.id),
@@ -174,11 +194,59 @@
         <field name="domain_force">[(1, '=', 1)]</field>
     </record>
 
-    <!-- 零件更換記錄規則 - 基於員工階層關係 -->
+    <!-- 費用記錄規則 - 唯讀可看到所有費用但只能讀取 -->
+    <record id="rule_field_service_expense_viewer" model="ir.rule">
+        <field name="name">費用記錄：唯讀</field>
+        <field name="model_id" ref="model_field_service_expense"/>
+        <field name="groups" eval="[(4, ref('group_field_service_viewer'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <!-- 客戶處理單記錄規則 - 唯讀可看到所有客戶處理單 -->
+    <record id="rule_customer_service_sheet_viewer" model="ir.rule">
+        <field name="name">客戶處理單：唯讀</field>
+        <field name="model_id" ref="model_customer_service_sheet"/>
+        <field name="groups" eval="[(4, ref('group_field_service_viewer'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <!-- 檢查清單記錄規則 - 唯讀可看到所有檢查清單 -->
+    <record id="rule_field_service_checklist_viewer" model="ir.rule">
+        <field name="name">檢查清單：唯讀</field>
+        <field name="model_id" ref="model_field_service_checklist_line"/>
+        <field name="groups" eval="[(4, ref('group_field_service_viewer'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <!-- 零件更換記錄規則 - 唯讀可看到所有零件更換記錄 -->
+    <record id="rule_field_service_part_viewer" model="ir.rule">
+        <field name="name">零件更換：唯讀</field>
+        <field name="model_id" ref="model_field_service_part_replacement"/>
+        <field name="groups" eval="[(4, ref('group_field_service_viewer'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <!-- 零件更換記錄規則 - 基於員工階層關係（排除唯讀群組） -->
     <record id="rule_field_service_part_employee" model="ir.rule">
         <field name="name">零件更換：員工階層權限</field>
         <field name="model_id" ref="model_field_service_part_replacement"/>
-        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="groups" eval="[(4, ref('group_field_service_user')), (4, ref('group_field_service_technician')), (4, ref('group_field_service_manager'))]"/>
         <field name="domain_force">[
             '|', '|',
                 ('order_id.technician_id.user_id', '=', user.id),

@@ -40,6 +40,7 @@
     # 資料檔案載入順序
     'data': [
         # 安全權限
+        'security/security.xml',
         'security/ir.model.access.csv',
         
         # 資料檔案

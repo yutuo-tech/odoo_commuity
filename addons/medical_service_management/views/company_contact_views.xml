@@ -89,14 +89,6 @@
                     <field name="note" placeholder="關於此聯絡人的備註資訊..."/>
 
                 </sheet>
-                
-                <!-- 訊息和活動 - 隱藏不需要的功能
-                <div class="oe_chatter">
-                    <field name="message_follower_ids" groups="base.group_user"/>
-                    <field name="activity_ids"/>
-                    <field name="message_ids"/>
-                </div>
-                -->
             </form>
         </field>
     </record>

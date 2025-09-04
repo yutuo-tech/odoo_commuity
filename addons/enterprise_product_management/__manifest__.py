@@ -33,6 +33,7 @@
         'medical_service_management',
     ],
     'data': [
+        'security/security.xml',
         'security/ir.model.access.csv',
         'views/product_template_views.xml',
         'views/product_product_views.xml',

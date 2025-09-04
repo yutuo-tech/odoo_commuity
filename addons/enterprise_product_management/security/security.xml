@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+        
+        <!-- 企業產品管理權限分類 -->
+        <record id="category_enterprise_product" model="ir.module.category">
+            <field name="name">企業產品管理</field>
+            <field name="description">企業產品物料管理權限設定</field>
+            <field name="sequence">10</field>
+        </record>
+
+        <!-- 唯讀群組 (顯示在下拉選單) -->
+        <record id="group_product_readonly" model="res.groups">
+            <field name="name">唯讀</field>
+            <field name="category_id" ref="category_enterprise_product"/>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+            <field name="comment">可查看所有產品物料資料，完全唯讀權限</field>
+        </record>
+
+        <!-- 使用者群組 (顯示在下拉選單) -->
+        <record id="group_product_user" model="res.groups">
+            <field name="name">使用者</field>
+            <field name="category_id" ref="category_enterprise_product"/>
+            <field name="implied_ids" eval="[(4, ref('base.group_user')), (4, ref('stock.group_stock_user')), (4, ref('mrp.group_mrp_user'))]"/>
+            <field name="comment">可進行產品物料的一般操作，包含庫存和 BOM 查看權限</field>
+        </record>
+
+        <!-- 管理員群組 (顯示在下拉選單) -->
+        <record id="group_product_manager" model="res.groups">
+            <field name="name">管理員</field>
+            <field name="category_id" ref="category_enterprise_product"/>
+            <field name="implied_ids" eval="[(4, ref('group_product_user')), (4, ref('stock.group_stock_manager')), (4, ref('mrp.group_mrp_manager'))]"/>
+            <field name="comment">可完整管理所有產品物料資料、庫存和 BOM 設定</field>
+        </record>
+
+        <!-- 記錄規則 -->
+        
+        <!-- 物料分類存取規則 -->
+        <record id="rule_epm_material_category_readonly" model="ir.rule">
+            <field name="name">物料分類：唯讀</field>
+            <field name="model_id" ref="model_epm_material_category"/>
+            <field name="domain_force">[(1,'=',1)]</field>
+            <field name="groups" eval="[(4,ref('group_product_readonly'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <record id="rule_epm_material_category_user" model="ir.rule">
+            <field name="name">物料分類：使用者可編輯</field>
+            <field name="model_id" ref="model_epm_material_category"/>
+            <field name="domain_force">[(1,'=',1)]</field>
+            <field name="groups" eval="[(4,ref('group_product_user'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <record id="rule_epm_material_category_manager" model="ir.rule">
+            <field name="name">物料分類：管理員完全存取</field>
+            <field name="model_id" ref="model_epm_material_category"/>
+            <field name="domain_force">[(1,'=',1)]</field>
+            <field name="groups" eval="[(4,ref('group_product_manager'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+        <!-- 維修物料存取規則 -->
+        <record id="rule_epm_material_repair_readonly" model="ir.rule">
+            <field name="name">維修物料：唯讀</field>
+            <field name="model_id" ref="model_epm_material_repair"/>
+            <field name="domain_force">[(1,'=',1)]</field>
+            <field name="groups" eval="[(4,ref('group_product_readonly'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <record id="rule_epm_material_repair_user" model="ir.rule">
+            <field name="name">維修物料：使用者可編輯</field>
+            <field name="model_id" ref="model_epm_material_repair"/>
+            <field name="domain_force">[(1,'=',1)]</field>
+            <field name="groups" eval="[(4,ref('group_product_user'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <record id="rule_epm_material_repair_manager" model="ir.rule">
+            <field name="name">維修物料：管理員完全存取</field>
+            <field name="model_id" ref="model_epm_material_repair"/>
+            <field name="domain_force">[(1,'=',1)]</field>
+            <field name="groups" eval="[(4,ref('group_product_manager'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+        <!-- 保養項目存取規則 -->
+        <record id="rule_epm_maintenance_item_readonly" model="ir.rule">
+            <field name="name">保養項目：唯讀</field>
+            <field name="model_id" ref="model_epm_maintenance_item"/>
+            <field name="domain_force">[(1,'=',1)]</field>
+            <field name="groups" eval="[(4,ref('group_product_readonly'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <record id="rule_epm_maintenance_item_user" model="ir.rule">
+            <field name="name">保養項目：使用者可編輯</field>
+            <field name="model_id" ref="model_epm_maintenance_item"/>
+            <field name="domain_force">[(1,'=',1)]</field>
+            <field name="groups" eval="[(4,ref('group_product_user'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <record id="rule_epm_maintenance_item_manager" model="ir.rule">
+            <field name="name">保養項目：管理員完全存取</field>
+            <field name="model_id" ref="model_epm_maintenance_item"/>
+            <field name="domain_force">[(1,'=',1)]</field>
+            <field name="groups" eval="[(4,ref('group_product_manager'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+    </data>
+</odoo>
