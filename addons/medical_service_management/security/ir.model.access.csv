@@ -1,9 +1,9 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_company_department_readonly,company.department.readonly,model_company_department,group_contact_readonly,1,0,0,0
-access_company_department_user,company.department.user,model_company_department,group_contact_user,1,1,1,0
-access_company_department_manager,company.department.manager,model_company_department,group_contact_manager,1,1,1,1
-access_company_contact_readonly,company.contact.readonly,model_company_contact,group_contact_readonly,1,0,0,0
-access_company_contact_user,company.contact.user,model_company_contact,group_contact_user,1,1,1,0
-access_company_contact_manager,company.contact.manager,model_company_contact,group_contact_manager,1,1,1,1
+access_company_department_readonly,company.department.readonly,model_company_department,medical_service_management.group_contact_readonly,1,0,0,0
+access_company_department_user,company.department.user,model_company_department,medical_service_management.group_contact_user,1,1,1,0
+access_company_department_manager,company.department.manager,model_company_department,medical_service_management.group_contact_manager,1,1,1,1
+access_company_contact_readonly,company.contact.readonly,model_company_contact,medical_service_management.group_contact_readonly,1,0,0,0
+access_company_contact_user,company.contact.user,model_company_contact,medical_service_management.group_contact_user,1,1,1,0
+access_company_contact_manager,company.contact.manager,model_company_contact,medical_service_management.group_contact_manager,1,1,1,1
 access_company_department_base,company.department.base,model_company_department,base.group_user,1,0,0,0
 access_company_contact_base,company.contact.base,model_company_contact,base.group_user,1,0,0,0
